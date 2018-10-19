@@ -16,15 +16,56 @@
 		<url-pattern>/UploadServlet</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>JustADisplayServlet</servlet-name>
+		<servlet-class>org.ideoholic.servlet.UploadDisplayServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>JustADisplayServlet</servlet-name>
+		<url-pattern>/displayServlet</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>LoginServlet</servlet-name>
+		<servlet-class>org.ideoholic.servlet.LoginServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>LoginServlet</servlet-name>
+		<url-pattern>/doLogin</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>logOutServlet</servlet-name>
+		<servlet-class>org.ideoholic.servlet.LogoutServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>logOutServlet</servlet-name>
+		<url-pattern>/doLogout</url-pattern>
+	</servlet-mapping>
+
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
+
+	<filter>
+		<filter-name>authenticationChecker</filter-name>
+		<filter-class>org.ideoholic.servlet.filter.AuthenticationFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>authenticationChecker</filter-name>
+		<url-pattern>/displayServlet</url-pattern>
+		<url-pattern>/UploadServlet</url-pattern>
+	</filter-mapping>
 
 	<context-param>
 		<description>Location to store uploaded file</description>
 		<param-name>file-upload</param-name>
 		<param-value>
-         /home/springboard/eclipse-workspace/imifosx-datamigrator/
+         /tmp/
       </param-value>
 	</context-param>
 </web-app>
