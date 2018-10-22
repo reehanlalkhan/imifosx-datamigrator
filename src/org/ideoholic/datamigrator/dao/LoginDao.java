@@ -1,4 +1,4 @@
-package org.ideoholic.dao;
+package org.ideoholic.datamigrator.dao;
 
 public class LoginDao {
 

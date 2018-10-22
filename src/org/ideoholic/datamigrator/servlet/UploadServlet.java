@@ -1,4 +1,4 @@
-package org.ideoholic.servlet;
+package org.ideoholic.datamigrator.servlet;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,6 +18,7 @@ import org.apache.tomcat.util.http.fileupload.FileItem;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
+import org.ideoholic.datamigrator.excelservice.MemberDataImporter;
 
 public class UploadServlet extends HttpServlet {
 
@@ -28,7 +29,8 @@ public class UploadServlet extends HttpServlet {
 	}
 
 	private String filePath;
-	private int maxFileSize = 50 * 1024;
+	// Allowing 50MB of data per file
+	private int maxFileSize = 50 * 1000 * 1024;
 	private int maxMemSize = 4 * 1024;
 
 	public void init() {
@@ -98,20 +100,23 @@ public class UploadServlet extends HttpServlet {
 					// Write the file
 					if (fileName.lastIndexOf("\\") >= 0) {
 						fullFilePath = filePath + fileName.substring(fileName.lastIndexOf("\\"));
-						System.out.println("Full File Path:" + fullFilePath);
+						System.out.println("If Full File Path:" + fullFilePath);
 						file = new File(fullFilePath);
 					} else {
 						fullFilePath = filePath + fileName.substring(fileName.lastIndexOf("\\") + 1);
-						System.out.println("Full File Path:" + fullFilePath);
+						System.out.println("Else Full File Path:" + fullFilePath);
 						file = new File(fullFilePath);
 					}
-					fi.write(file);
+					// fi.write(file);
 					writeToFile(file, fi.getInputStream());
+					MemberDataImporter mdi = new MemberDataImporter(fullFilePath);
+					mdi.importMemberData("00000020");
 					out.println("Uploaded Filename: " + fileName + "<br>");
 					out.println("Uploaded Field Name: " + fieldName + "<br>");
 					out.println("Uploaded Content Type: " + contentType + "<br>");
 					out.println("Uploaded is in memory: " + isInMemory + "<br>");
 					out.println("Uploaded size in bytes: " + sizeInBytes + "<br>");
+					// fi.delete();
 				}
 			}
 			out.println("<form action='UploadServlet'>");
@@ -122,6 +127,24 @@ public class UploadServlet extends HttpServlet {
 			out.println("</html>");
 		} catch (Exception ex) {
 			System.out.println(ex);
+			out.println("<html>");
+			out.println("<head>");
+			out.println("<title>Servlet upload</title>");
+			out.println("</head>");
+			out.println("<body>");
+			out.println("<H1>");
+			out.println("There was exception while uploading");
+			out.println("Please check:");
+			out.println("<ol>");
+			out.println("<li>If the given input data is in the proper format</li>");
+			out.println("<li>If the correct option is selected for the input data type</li>");
+			out.println("<li>If the database is up and running</li>");
+			out.println("</ol>");
+			out.println("</H1>");
+			out.println("Contact Ideoholic team in case the issue is not resolved");
+			out.println("</body>");
+			out.println("</html>");
+			ex.printStackTrace();
 		}
 	}
 
@@ -140,21 +163,8 @@ public class UploadServlet extends HttpServlet {
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
 		PrintWriter out = response.getWriter();
-		out.println("<html>");
-		out.println("<head>");
-		out.println("<title>Servlet upload</title>");
-		out.println("</head>");
-		out.println("<body>");
-		out.println("  <h3>File Upload:</h3>");
-		out.println("  Select a file to upload: <br />");
-		out.println("  <form action = 'UploadServlet' method = 'post' enctype = 'multipart/form-data'>");
-		out.println("     <input type = 'file' name = 'file' size = '50' />");
-		out.println("     <br />");
-		out.println("     <input type = 'submit' value = 'Upload File' />");
-		out.println("  </form>");
-		out.println("</body>");
-		out.println("</html>");
+		UploadDisplayServlet.printUploadPage(out);
+		out.close();
 	}
 }

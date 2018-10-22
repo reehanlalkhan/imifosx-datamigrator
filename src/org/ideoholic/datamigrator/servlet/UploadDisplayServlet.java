@@ -1,4 +1,4 @@
-package org.ideoholic.servlet;
+package org.ideoholic.datamigrator.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,9 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 public class UploadDisplayServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 2233093329064205559L;
-
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		PrintWriter out = response.getWriter();
+	
+	public static void printUploadPage(PrintWriter out) {
 		out.println("<html>");
 		out.println("<head>");
 		out.println("<title>Servlet upload</title>");
@@ -33,6 +32,12 @@ public class UploadDisplayServlet extends HttpServlet {
 		out.println("  </div>");
 		out.println("</body>");
 		out.println("</html>");
+	}
+
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		PrintWriter out = response.getWriter();
+		printUploadPage(out);
+		out.close();
 	}
 
 }

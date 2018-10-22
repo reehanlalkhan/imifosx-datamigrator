@@ -8,7 +8,7 @@
 
 	<servlet>
 		<servlet-name>UploadServlet</servlet-name>
-		<servlet-class>org.ideoholic.servlet.UploadServlet</servlet-class>
+		<servlet-class>org.ideoholic.datamigrator.servlet.UploadServlet</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
@@ -18,7 +18,7 @@
 
 	<servlet>
 		<servlet-name>JustADisplayServlet</servlet-name>
-		<servlet-class>org.ideoholic.servlet.UploadDisplayServlet</servlet-class>
+		<servlet-class>org.ideoholic.datamigrator.servlet.UploadDisplayServlet</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
@@ -28,7 +28,7 @@
 
 	<servlet>
 		<servlet-name>LoginServlet</servlet-name>
-		<servlet-class>org.ideoholic.servlet.LoginServlet</servlet-class>
+		<servlet-class>org.ideoholic.datamigrator.servlet.LoginServlet</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
@@ -38,7 +38,7 @@
 
 	<servlet>
 		<servlet-name>logOutServlet</servlet-name>
-		<servlet-class>org.ideoholic.servlet.LogoutServlet</servlet-class>
+		<servlet-class>org.ideoholic.datamigrator.servlet.LogoutServlet</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
@@ -52,7 +52,7 @@
 
 	<filter>
 		<filter-name>authenticationChecker</filter-name>
-		<filter-class>org.ideoholic.servlet.filter.AuthenticationFilter</filter-class>
+		<filter-class>org.ideoholic.datamigrator.servlet.filter.AuthenticationFilter</filter-class>
 	</filter>
 
 	<filter-mapping>
@@ -65,7 +65,7 @@
 		<description>Location to store uploaded file</description>
 		<param-name>file-upload</param-name>
 		<param-value>
-         /tmp/
+         /home/springboard/Desktop/baitunnasr/
       </param-value>
 	</context-param>
 </web-app>
