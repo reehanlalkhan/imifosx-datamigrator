@@ -15,8 +15,8 @@ public class DBUtils {
 
 	private DBUtils() throws ClassNotFoundException, SQLException {
 		Class.forName("com.mysql.jdbc.Driver");
-		connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mifostenant-default", "imifosx_user",
-				"iMif0sXpasswd");
+		connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mifostenant-default", "root",
+				"mysql");
 		connection.setAutoCommit(false);
 		listOfStatements = new ArrayList<PreparedStatement>();
 	}

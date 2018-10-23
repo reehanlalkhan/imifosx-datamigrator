@@ -12,6 +12,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.ideoholic.datamigrator.excelservice.LoanDataRow;
+import org.ideoholic.datamigrator.excelservice.LoanDataRowIterator;
 import org.ideoholic.datamigrator.excelservice.MemberDataRow;
 import org.ideoholic.datamigrator.excelservice.MemberDataRowIterator;
 
@@ -41,6 +43,24 @@ public class ExcelReaderUtils {
 		}
 		closeWorkbook();
 		return new MemberDataRowIterator(membersList);
+	}
+
+	public Iterator<LoanDataRow> getWorkBookIteratorLoan(int sheetNum) {
+		List<LoanDataRow> loanList = new ArrayList<LoanDataRow>();
+		Sheet sheet = workbook.getSheetAt(sheetNum);
+		Row row;
+
+		for (int i1 = 12; i1 <= sheet.getLastRowNum(); i1++) {
+			row = sheet.getRow(i1);
+			if (row != null) {
+				LoanDataRow ldr = new LoanDataRow(row);
+				loanList.add(ldr);
+			} else {
+				System.out.println(i1);
+			}
+		}
+		closeWorkbook();
+		return new LoanDataRowIterator(loanList);
 	}
 
 	public void closeWorkbook() {

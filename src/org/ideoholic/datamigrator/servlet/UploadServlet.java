@@ -18,16 +18,13 @@ import org.apache.tomcat.util.http.fileupload.FileItem;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
-import org.ideoholic.datamigrator.excelservice.MemberDataImporter;
+import org.ideoholic.datamigrator.excelservice.LoanDataImporter;
 
 public class UploadServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 2233093329064205559L;
 
-	public UploadServlet() {
-		// TODO Auto-generated constructor stub
-	}
-
+	
 	private String filePath;
 	// Allowing 50MB of data per file
 	private int maxFileSize = 50 * 1000 * 1024;
@@ -109,8 +106,12 @@ public class UploadServlet extends HttpServlet {
 					}
 					// fi.write(file);
 					writeToFile(file, fi.getInputStream());
-					MemberDataImporter mdi = new MemberDataImporter(fullFilePath);
-					mdi.importMemberData("00000020");
+					 // if Member data option is selected
+						// MemberDataImporter mdi = new MemberDataImporter(fullFilePath);
+						// mdi.importMemberData("00000020");
+						LoanDataImporter ldi = new LoanDataImporter(fullFilePath);
+						ldi.importLoanData();
+					
 					out.println("Uploaded Filename: " + fileName + "<br>");
 					out.println("Uploaded Field Name: " + fieldName + "<br>");
 					out.println("Uploaded Content Type: " + contentType + "<br>");
