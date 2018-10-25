@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,12 +21,13 @@ import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
 import org.ideoholic.datamigrator.excelservice.LoanDataImporter;
+import org.ideoholic.datamigrator.excelservice.LoanTransactionImporter;
+import org.ideoholic.datamigrator.excelservice.MemberDataImporter;
 
 public class UploadServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 2233093329064205559L;
 
-	
 	private String filePath;
 	// Allowing 50MB of data per file
 	private int maxFileSize = 50 * 1000 * 1024;
@@ -39,6 +42,7 @@ public class UploadServlet extends HttpServlet {
 		String fullFilePath = null;
 		boolean isMultipart;
 		File file;
+		String userSelectedOption = null;
 
 		// Check that we have a file upload request
 		isMultipart = ServletFileUpload.isMultipartContent(request);
@@ -106,20 +110,17 @@ public class UploadServlet extends HttpServlet {
 					}
 					// fi.write(file);
 					writeToFile(file, fi.getInputStream());
-					 // if Member data option is selected
-						// MemberDataImporter mdi = new MemberDataImporter(fullFilePath);
-						// mdi.importMemberData("00000020");
-						LoanDataImporter ldi = new LoanDataImporter(fullFilePath);
-						ldi.importLoanData();
-					
+
 					out.println("Uploaded Filename: " + fileName + "<br>");
 					out.println("Uploaded Field Name: " + fieldName + "<br>");
 					out.println("Uploaded Content Type: " + contentType + "<br>");
 					out.println("Uploaded is in memory: " + isInMemory + "<br>");
 					out.println("Uploaded size in bytes: " + sizeInBytes + "<br>");
-					// fi.delete();
+				} else {
+					userSelectedOption = fi.getString();
 				}
 			}
+			runServiceBasedOnUserSelection(userSelectedOption, fullFilePath);
 			out.println("<form action='UploadServlet'>");
 			out.println("<button>Upload Another File</button>");
 			out.println("</form>");
@@ -147,6 +148,26 @@ public class UploadServlet extends HttpServlet {
 			out.println("</html>");
 			ex.printStackTrace();
 		}
+	}
+
+	private void runServiceBasedOnUserSelection(String userSelectedOption, String fullFilePath)
+			throws IOException, ClassNotFoundException, ParseException, SQLException {
+		if ("Member_File".equals(userSelectedOption)) {
+			// Official selected
+			System.out.println("in member file" + userSelectedOption);
+			MemberDataImporter mdi = new MemberDataImporter(fullFilePath);
+			mdi.importMemberData("00000020");
+		} else if ("Loan_File".equals(userSelectedOption)) {
+			// all selected
+			System.out.println("in loan file" + userSelectedOption);
+			LoanDataImporter ldi = new LoanDataImporter(fullFilePath);
+			ldi.importLoanData();
+		} else if ("Loan_Transaction_File".equals(userSelectedOption)) {
+			// all selected
+			LoanTransactionImporter ldi = new LoanTransactionImporter(fullFilePath);
+			ldi.importTransactionData();
+		}
+
 	}
 
 	private void writeToFile(File f, InputStream inputStream) throws IOException {

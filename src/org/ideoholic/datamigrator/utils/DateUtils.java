@@ -24,6 +24,10 @@ public class DateUtils {
 		return dtf.format(localDate);
 	}
 
+	public static Date getCurrentDateAsSqlDate() {
+		Date ndate = new Date();
+		return ndate;
+	}
 	// Date Utilities for LoanDataImporter
 
 	public static String getCurrentDateAsSqlDate(Date inputdate) {
@@ -36,5 +40,12 @@ public class DateUtils {
 		}
 		return cdate;
 	}
+	public static String getCurrentDateAsSqlDateHMS() {
+		String cdate = null;
+	   DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+       Date dateobj = new Date();
+      cdate = df.format(dateobj);
+   	return cdate;
+   	}
 
 }

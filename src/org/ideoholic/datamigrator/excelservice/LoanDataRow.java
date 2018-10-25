@@ -12,12 +12,13 @@ public class LoanDataRow {
 	private Date expiryDate;
 	private int loanOS;
 	private int accountNumber;	
-	
+	private String dName;
 	public LoanDataRow(Row row) {
 		setDisbursedDate(getCellValueDD(row, 1));
 		setExpiryDate(getCellValueED(row, 8));
 		setAccountNumber(getCellValueNo(row,13));
 		setLoanOS(getCellValue(row, 27));
+		setDName(getCellValueDname(row,10));
 	}
 
 	private int getCellValueNo(Row row, int columnNum) {
@@ -60,6 +61,17 @@ public class LoanDataRow {
 		return result;
 	}
 	
+
+	private String getCellValueDname(Row row, int columnNum) {
+		String result = null ;
+		Cell cell = row.getCell(columnNum);
+		if (cell != null) {
+			result = cell.getStringCellValue();
+			System.out.println("Result No"+result);
+		}
+		return result;
+	}
+	
 	public Date getDisbursedDate() {
 		return disbursedDate;
 	}
@@ -90,6 +102,14 @@ public class LoanDataRow {
 
 	public void setAccountNumber(int accountNumber) {
 		this.accountNumber = accountNumber;
+	}
+	
+	public String getDName() {
+		return dName;
+	}
+
+	public void setDName(String dName) {
+		this.dName = dName;
 	}
 	
 }

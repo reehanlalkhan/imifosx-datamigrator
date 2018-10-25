@@ -14,6 +14,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.ideoholic.datamigrator.excelservice.LoanDataRow;
 import org.ideoholic.datamigrator.excelservice.LoanDataRowIterator;
+import org.ideoholic.datamigrator.excelservice.LoanTransactionRow;
+import org.ideoholic.datamigrator.excelservice.LoanTransactionRowIterator;
 import org.ideoholic.datamigrator.excelservice.MemberDataRow;
 import org.ideoholic.datamigrator.excelservice.MemberDataRowIterator;
 
@@ -61,6 +63,23 @@ public class ExcelReaderUtils {
 		}
 		closeWorkbook();
 		return new LoanDataRowIterator(loanList);
+	}
+	public Iterator<LoanTransactionRow> getWorkBookIteratorLoanTransaction(int sheetNum) {
+		List<LoanTransactionRow> loanList = new ArrayList<LoanTransactionRow>();
+		Sheet sheet = workbook.getSheetAt(sheetNum);
+		Row row;
+
+		for (int i1 = 5; i1 <= sheet.getLastRowNum(); i1++) {
+			row = sheet.getRow(i1);
+			if (row != null) {
+				LoanTransactionRow ltr = new LoanTransactionRow(row);
+				loanList.add(ltr);
+			} else {
+				System.out.println("No data in row"+i1);
+			}
+		}
+		closeWorkbook();
+		return new LoanTransactionRowIterator(loanList);
 	}
 
 	public void closeWorkbook() {

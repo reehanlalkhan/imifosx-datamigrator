@@ -23,6 +23,9 @@ public class UploadDisplayServlet extends HttpServlet {
 		out.println("  Select a file to upload: <br />");
 		out.println(
 				"  <form id='fileUploadForm' action = 'UploadServlet' method = 'POST' enctype = 'multipart/form-data'>");
+		out.println("<input type = 'radio' name = \"f1\" id =\"11\" value=\"Member_File\">Member Creation<br> "); 
+		out.println( "<input type = \"radio\" name = \"f1\" id =\"12\" value=\"Loan_File\"> Loan Creation<br>");
+		out.println( "<input type = \"radio\" name = \"f1\" id =\"13\" value=\"Loan_Transaction_File\"> Loan Transaction<br>");
 		out.println("     <input type = 'file' name = 'file' size = '50' />");
 		out.println("     <br />");
 		out.println("     <input type = 'submit' value = 'Upload File' />");
@@ -35,6 +38,11 @@ public class UploadDisplayServlet extends HttpServlet {
 	}
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		System.out.println("Display Printuploadpage");
+		String value = request.getParameter("f1");
+		String value1 = request.getParameter("f1");
+		System.out.println("MEMBER FILE"+value);
+		System.out.println("LOAN FILE"+value1);
 		PrintWriter out = response.getWriter();
 		printUploadPage(out);
 		out.close();
