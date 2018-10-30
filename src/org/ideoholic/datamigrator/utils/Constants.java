@@ -7,14 +7,14 @@ public interface Constants {
 	BigDecimal OFFICE_ID = new BigDecimal(1);
 	byte IS_REVERSED = 0;
 	BigDecimal APPUSER_ID = new BigDecimal(1);
-	
-	
-	BigInteger PRODUCT_ID = BigInteger.valueOf(1);
+
+	int DEFAULT_LOAN_PRODUCT_ID = 1;
+	int DEFAULT_SAVINGS_PRODUCT_ID = 2;
 	short LOAN_STATUS_ID = 300;
 	short LOAN_TYPE_ENUM = 1;
 	String CURRENCY_CODE = "INR";
 	short CURRENCY_DIGITS = 2;
-	short CURRENCY_MULTIPLESOF =1;
+	short CURRENCY_MULTIPLESOF = 1;
 	short INTEREST_PERIOD_FREQUENCY_ENUM = 2;
 	short INTEREST_METHOD_ENUM = 0;
 	short INTEREST_CALCULATED_IN_PERIOD_ENUM = 1;
@@ -32,10 +32,10 @@ public interface Constants {
 	BigInteger CREATEDBY_ID = BigInteger.valueOf(1);
 	BigInteger LASTMODIFIEDBY_ID = BigInteger.valueOf(1);
 	byte RECALCULATED_INTEREST_COMPONENT = 0;
-	
+
 	String GENDER_MALE = "MALE";
-	int MALE_CV_ID=22;
-	int FEMALE_CV_ID=22;
+	int MALE_CV_ID = 22;
+	int FEMALE_CV_ID = 22;
 	BigInteger ADDRESSID = BigInteger.valueOf(1);
 	BigInteger ADDRESSTYPEID = BigInteger.valueOf(21);
 	byte IS_ACTIVE = 1;

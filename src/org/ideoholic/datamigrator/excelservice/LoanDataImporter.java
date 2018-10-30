@@ -18,7 +18,7 @@ import org.ideoholic.datamigrator.utils.DBUtils;
 import org.ideoholic.datamigrator.utils.DateUtils;
 import org.ideoholic.datamigrator.utils.ExcelReaderUtils;
 
-public class LoanDataImporter implements Constants{
+public class LoanDataImporter implements Constants {
 
 	private final ExcelReaderUtils excelReader;
 
@@ -35,9 +35,15 @@ public class LoanDataImporter implements Constants{
 			int y = 18;
 			String account_no = String.format("%09d", y);
 			String display_name = currentRow.getDName();
-			
-			int product_id =Integer.parseInt(inputValue);
-			
+			int product_id;
+			try {
+				product_id = Integer.parseInt(inputValue);
+			} catch (Exception ex) {
+				System.out.println("LoanDataImporter.importLoanData()::" + ex.getMessage());
+				// In case of parse excepton assigning default product id
+				product_id = DEFAULT_LOAN_PRODUCT_ID;
+			}
+
 			BigDecimal client_id = getClientId(display_name);
 			Date disbursedDate = currentRow.getDisbursedDate();
 			Date expiryDate = currentRow.getExpiryDate();
@@ -60,7 +66,6 @@ public class LoanDataImporter implements Constants{
 			String principal_disbursed_derived = String.format("%.4f", loanOS);
 			String principal_outstanding_derived = String.format("%.4f", loanOS);
 
-			
 			insertLoan(account_no, client_id, product_id, LOAN_STATUS_ID, LOAN_TYPE_ENUM, CURRENCY_CODE,
 					CURRENCY_DIGITS, CURRENCY_MULTIPLESOF, principal_amount_proposed, principal_amount,
 					approved_principal, nominal_interest_rate_per_period, INTEREST_PERIOD_FREQUENCY_ENUM,
@@ -74,7 +79,7 @@ public class LoanDataImporter implements Constants{
 			DBUtils.getInstance().commitTransaction();
 
 			BigDecimal loan_id = (BigDecimal) getLoanId(account_no);
-			
+
 			String transaction_date = DateUtils.getCurrentDateAsSqlDateString();
 			String amount = String.format("%.4f", loanOS);
 			String outstanding_loan_balance_derived = String.format("%.4f", loanOS);
@@ -129,7 +134,7 @@ public class LoanDataImporter implements Constants{
 
 				} else {
 					short p = (short) (j);
-					//double final_payment = amt_monthly_deduction + new_loanOs;
+					// double final_payment = amt_monthly_deduction + new_loanOs;
 					insertRepaymentSchedule1(loan_id, duedate, maturedon_date, p, new_loanOs, completed_derived,
 							CREATEDBY_ID, created_date, lastmodified_date, LASTMODIFIEDBY_ID,
 							RECALCULATED_INTEREST_COMPONENT);
