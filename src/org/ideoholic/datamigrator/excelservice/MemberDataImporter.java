@@ -53,10 +53,12 @@ public class MemberDataImporter implements Constants {
 			String dateOfBirth = DateUtils.convertDateStringToSQLDateString(dateString);
 
 			int accountNumber = Integer.parseInt(account_no_string);
-			insertMember(OFFICE_ID, getCurrentMaxClientId(accountNumber), firstname, lastname, displayName,
-					gender_cv_id, dateOfBirth);
+			BigDecimal nextClientId = getCurrentMaxClientId(accountNumber);
+			// Add 1 to get the next client ID from the max of previous max of ID
+			nextClientId = nextClientId.add(new BigDecimal(1));
+			insertMember(OFFICE_ID, nextClientId, firstname, lastname, displayName, gender_cv_id, dateOfBirth);
 
-			BigDecimal clientId = getClientId(accountNumber);
+			BigDecimal clientId = getClientId(nextClientId);
 
 			if (street != null && !street.isEmpty()) {
 				insertAddress(clientId, street);
@@ -76,7 +78,9 @@ public class MemberDataImporter implements Constants {
 		if (result.next()) {
 			clientId = result.getBigDecimal(1);
 		} else {
-			System.out.println("MemberDataImporter.getCurrentMaxClientId()::No max ID found from the client table, returning:" + accountNumber);
+			System.out.println(
+					"MemberDataImporter.getCurrentMaxClientId()::No max ID found from the client table, returning:"
+							+ accountNumber);
 			clientId = new BigDecimal(accountNumber);
 		}
 		System.out.println("MemberDataImporter.getCurrentMaxClientId()::Fetched max client ID:" + clientId);
@@ -85,8 +89,6 @@ public class MemberDataImporter implements Constants {
 
 	public void insertMember(BigDecimal officeId, BigDecimal accountNumber, String firstname, String lastname,
 			String displayName, int genderCvv, String dateOfBirth) throws SQLException, ClassNotFoundException {
-		// Add one before insertion to get the next account number
-		accountNumber = accountNumber.add(new BigDecimal(1));
 		String currentDate = DateUtils.getCurrentDateAsSqlDateString();
 		String sql = "INSERT INTO m_client(office_id,account_no,activation_date,firstname,"
 				+ "lastname,display_name,gender_cv_id,date_of_birth) VALUES('" + officeId + "'," + "'" + accountNumber
@@ -96,7 +98,7 @@ public class MemberDataImporter implements Constants {
 
 	}
 
-	public BigDecimal getClientId(int accountNumber) throws ClassNotFoundException, SQLException {
+	public BigDecimal getClientId(BigDecimal accountNumber) throws ClassNotFoundException, SQLException {
 		BigDecimal clientId = null;
 		String sql = "select id from m_client where account_no=" + "'" + accountNumber + "'";
 		ResultSet result = DBUtils.getInstance().executeQueryStatement(sql);

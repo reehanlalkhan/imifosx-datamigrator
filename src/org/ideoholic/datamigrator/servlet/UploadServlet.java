@@ -152,7 +152,7 @@ public class UploadServlet extends HttpServlet {
 			out.println("Exception:" + ex.getMessage());
 			StackTraceElement[] stackTrace = ex.getStackTrace();
 			for (StackTraceElement element : stackTrace) {
-			        out.println(element.toString());
+				out.println(element.toString());
 			}
 			out.println("</font>");
 			out.println("</body>");
@@ -160,10 +160,10 @@ public class UploadServlet extends HttpServlet {
 			ex.printStackTrace();
 			// Rollback DB connection
 			try {
-			        DBUtils.getInstance().rollbackTransaction();
+				DBUtils.getInstance().rollbackTransaction();
 			} catch (ClassNotFoundException | SQLException e) {
-			        e.printStackTrace();
-			        out.println("Rollback failed");
+				e.printStackTrace();
+				out.println("Rollback failed");
 			}
 			ex.printStackTrace();
 		}
@@ -185,17 +185,15 @@ public class UploadServlet extends HttpServlet {
 			// all selected
 			LoanTransactionImporter ldi = new LoanTransactionImporter(fullFilePath);
 			ldi.importTransactionData();
+		} else if ("Savings_Transaction_File".equals(userSelectedOption)) {
+			// all selected
+			SavingsDataImporter ldi = new SavingsDataImporter(fullFilePath);
+			ldi.importSavingsData();
+		} else if ("Savings_File".equals(userSelectedOption)) {
+			// all selected
+			SavingsAccountImporter ldi = new SavingsAccountImporter(fullFilePath);
+			ldi.importSavingsAccount();
 		}
-		 else if ("Savings_Transaction_File".equals(userSelectedOption)) {
-				// all selected
-				SavingsDataImporter ldi = new SavingsDataImporter(fullFilePath);
-				ldi.importSavingsData();
-		}
-			 else if ("Savings_File".equals(userSelectedOption)) {
-				// all selected
-				SavingsAccountImporter ldi = new SavingsAccountImporter(fullFilePath);
-				ldi.importSavingsAccount();
-			 }
 	}
 
 	private void writeToFile(File f, InputStream inputStream) throws IOException {
