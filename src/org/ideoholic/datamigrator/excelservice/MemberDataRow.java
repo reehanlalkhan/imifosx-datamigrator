@@ -1,5 +1,7 @@
 package org.ideoholic.datamigrator.excelservice;
 
+import java.util.Date;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
@@ -7,23 +9,40 @@ public class MemberDataRow {
 
 	private String displayName;
 	private String gender;
-	private String dob;
+	private Date dob;
 	private String panNo;
 	private String street;
 
 	public MemberDataRow(Row row) {
 		setDisplayName(getCellValue(row, 2));
 		setGender(getCellValue(row, 4));
-		setDob(getCellValue(row, 5));
+		setDob(getDateCellValue(row, 5));
 		setPanNo(getCellValue(row, 7));
 		setStreet(getCellValue(row, 8));
+	}
+	
+	private Date getDateCellValue(Row row, int columnNum) {
+		Date result = new Date();
+		Cell cell = row.getCell(columnNum);
+		try {
+			if (cell != null) {
+				result = cell.getDateCellValue();
+			}
+		} catch (Exception ex) {
+			System.out.println("Column:" + columnNum);
+		}
+		return result;
 	}
 
 	private String getCellValue(Row row, int columnNum) {
 		String result = "";
 		Cell cell = row.getCell(columnNum);
-		if (cell != null) {
-			result = cell.getStringCellValue();
+		try {
+			if (cell != null) {
+				result = cell.getStringCellValue();
+			}
+		} catch (Exception ex) {
+			System.out.println("Column:" + columnNum);
 		}
 		return result;
 	}
@@ -44,11 +63,11 @@ public class MemberDataRow {
 		this.gender = gender;
 	}
 
-	public String getDob() {
+	public Date getDob() {
 		return dob;
 	}
 
-	public void setDob(String dob) {
+	public void setDob(Date dob) {
 		this.dob = dob;
 	}
 
