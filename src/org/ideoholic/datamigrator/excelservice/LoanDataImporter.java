@@ -26,7 +26,7 @@ public class LoanDataImporter implements Constants{
 		excelReader = new ExcelReaderUtils(excelFileName);
 	}
 
-	public void importLoanData() throws ParseException, ClassNotFoundException, SQLException {
+	public void importLoanData(String inputValue) throws ParseException, ClassNotFoundException, SQLException {
 		// This line will set account number start string to 0 if no number is passed
 
 		Iterator<LoanDataRow> excelIterator = excelReader.getWorkBookIteratorLoan(0);
@@ -35,6 +35,9 @@ public class LoanDataImporter implements Constants{
 			int y = 13;
 			String account_no = String.format("%09d", y);
 			String display_name = currentRow.getDName();
+			
+			int product_id =Integer.parseInt(inputValue);
+			
 			BigDecimal client_id = getClientId(display_name);
 			Date disbursedDate = currentRow.getDisbursedDate();
 			Date expiryDate = currentRow.getExpiryDate();
@@ -58,7 +61,7 @@ public class LoanDataImporter implements Constants{
 			String principal_outstanding_derived = String.format("%.4f", loanOS);
 
 			
-			insertLoan(account_no, client_id, PRODUCT_ID, LOAN_STATUS_ID, LOAN_TYPE_ENUM, CURRENCY_CODE,
+			insertLoan(account_no, client_id, product_id, LOAN_STATUS_ID, LOAN_TYPE_ENUM, CURRENCY_CODE,
 					CURRENCY_DIGITS, CURRENCY_MULTIPLESOF, principal_amount_proposed, principal_amount,
 					approved_principal, nominal_interest_rate_per_period, INTEREST_PERIOD_FREQUENCY_ENUM,
 					annual_nominal_interest_rate, INTEREST_METHOD_ENUM, INTEREST_CALCULATED_IN_PERIOD_ENUM,
@@ -138,7 +141,7 @@ public class LoanDataImporter implements Constants{
 		}
 	}
 
-	public void insertLoan(String account_no, BigDecimal client_id, BigInteger product_id, short loan_status_id,
+	public void insertLoan(String account_no, BigDecimal client_id, int product_id, short loan_status_id,
 			short loan_type_enum, String currency_code, short currency_digits, short currency_multiplesof,
 			String principal_amount_proposed, String principal_amount, String approved_principal,
 			String nominal_interest_rate_per_period, short interest_period_frequency_enum,
