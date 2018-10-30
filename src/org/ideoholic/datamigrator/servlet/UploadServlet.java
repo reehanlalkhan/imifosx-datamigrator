@@ -25,6 +25,7 @@ import org.ideoholic.datamigrator.excelservice.LoanTransactionImporter;
 import org.ideoholic.datamigrator.excelservice.MemberDataImporter;
 import org.ideoholic.datamigrator.excelservice.SavingsAccountImporter;
 import org.ideoholic.datamigrator.excelservice.SavingsDataImporter;
+import org.ideoholic.datamigrator.utils.DBUtils;
 
 public class UploadServlet extends HttpServlet {
 
@@ -136,7 +137,7 @@ public class UploadServlet extends HttpServlet {
 			out.println("<title>Servlet upload</title>");
 			out.println("</head>");
 			out.println("<body>");
-			out.println("<H1>");
+			out.println("<H3>");
 			out.println("There was exception while uploading");
 			out.println("Please check:");
 			out.println("<ol>");
@@ -144,10 +145,26 @@ public class UploadServlet extends HttpServlet {
 			out.println("<li>If the correct option is selected for the input data type</li>");
 			out.println("<li>If the database is up and running</li>");
 			out.println("</ol>");
-			out.println("</H1>");
+			out.println("</H3");
 			out.println("Contact Ideoholic team in case the issue is not resolved");
+			out.println("<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>");
+			out.println("<font size='2'>");
+			out.println("Exception:" + ex.getMessage());
+			StackTraceElement[] stackTrace = ex.getStackTrace();
+			for (StackTraceElement element : stackTrace) {
+			        out.println(element.toString());
+			}
+			out.println("</font>");
 			out.println("</body>");
 			out.println("</html>");
+			ex.printStackTrace();
+			// Rollback DB connection
+			try {
+			        DBUtils.getInstance().rollbackTransaction();
+			} catch (ClassNotFoundException | SQLException e) {
+			        e.printStackTrace();
+			        out.println("Rollback failed");
+			}
 			ex.printStackTrace();
 		}
 	}
@@ -178,7 +195,7 @@ public class UploadServlet extends HttpServlet {
 				// all selected
 				SavingsAccountImporter ldi = new SavingsAccountImporter(fullFilePath);
 				ldi.importSavingsAccount();
-
+			 }
 	}
 
 	private void writeToFile(File f, InputStream inputStream) throws IOException {

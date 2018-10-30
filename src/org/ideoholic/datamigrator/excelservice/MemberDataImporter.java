@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -43,9 +42,12 @@ public class MemberDataImporter implements Constants {
 			} else {
 				gender_cv_id = FEMALE_CV_ID;
 			}
-			// dd-MM-yyyy
+			// Adding 1 as the month returned is 0 to 11 range
 			int month = dob.getMonth() + 1;
-			String dateString = dob.getDate() + "-" + month + "-" + dob.getYear();
+			// Adding 1900 as the getYear gives the diff of date with 1900
+			int year = dob.getYear() + 1900;
+			// Preparing format of: dd-MM-yyyy
+			String dateString = dob.getDate() + "-" + month + "-" + year;
 			System.out.println("MemberDataImporter:importMemberData()::dateString:" + dateString);
 
 			String dateOfBirth = DateUtils.convertDateStringToSQLDateString(dateString);
@@ -56,14 +58,13 @@ public class MemberDataImporter implements Constants {
 
 			BigDecimal clientId = getClientId(accountNumber);
 
-			
-			if(street!=null && !street.isEmpty()) {
-	 			insertAddress(clientId, street);
-				}
-				
-				if(panNo!=null && !panNo.isEmpty()) {
-	 			insertMemberIdentifier(clientId, panNo);
-				}
+			if (street != null && !street.isEmpty()) {
+				insertAddress(clientId, street);
+			}
+
+			if (panNo != null && !panNo.isEmpty()) {
+				insertMemberIdentifier(clientId, panNo);
+			}
 		}
 		DBUtils.getInstance().commitTransaction();
 	}
@@ -75,10 +76,10 @@ public class MemberDataImporter implements Constants {
 		if (result.next()) {
 			clientId = result.getBigDecimal(1);
 		} else {
-			System.out.println("No max ID found from the client table, returning:" + accountNumber);
+			System.out.println("MemberDataImporter.getCurrentMaxClientId()::No max ID found from the client table, returning:" + accountNumber);
 			clientId = new BigDecimal(accountNumber);
 		}
-		System.out.println("Fetched max client ID:" + clientId);
+		System.out.println("MemberDataImporter.getCurrentMaxClientId()::Fetched max client ID:" + clientId);
 		return clientId;
 	}
 
@@ -102,11 +103,11 @@ public class MemberDataImporter implements Constants {
 		if (result.next()) {
 			clientId = result.getBigDecimal(1);
 		} else {
-			System.out.println("No id for the client");
+			System.out.println("MemberDataImporter.getClientId()::No id for the client");
 			throw new SQLException(
 					"Client insertion has failed, no client ID got generated for Account Number:" + accountNumber);
 		}
-		System.out.println("Fetched client ID:" + clientId);
+		System.out.println("MemberDataImporter.getClientId()::Fetched client ID:" + clientId);
 		return clientId;
 	}
 

@@ -15,8 +15,7 @@ public class DBUtils {
 
 	private DBUtils() throws ClassNotFoundException, SQLException {
 		Class.forName("com.mysql.jdbc.Driver");
-		connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mifostenant-default", "root",
-				"mysql");
+		connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mifostenant-default", "root", "mysql");
 		connection.setAutoCommit(false);
 		listOfStatements = new ArrayList<PreparedStatement>();
 	}
@@ -28,12 +27,14 @@ public class DBUtils {
 	}
 
 	public void executePreparedStatement(String sql) throws SQLException {
+		System.out.println("DBUtils.executePreparedStatement()::going to run SQL:" + sql);
 		PreparedStatement statement = connection.prepareStatement(sql);
 		statement.closeOnCompletion();
 		statement.execute();
 	}
 
 	public ResultSet executeQueryStatement(String sql) throws SQLException {
+		System.out.println("DBUtils.executeQueryStatement()::going to run SQL:" + sql);
 		PreparedStatement statement = connection.prepareStatement(sql);
 		// Store the statement here to enable closing when done
 		listOfStatements.add(statement);
@@ -58,8 +59,9 @@ public class DBUtils {
 		}
 		listOfStatements.clear();
 	}
-	
+
 	public void commitTransaction() {
+		System.out.println("DBUtils.commitTransaction(): Committing");
 		try {
 			closeAllStatements();
 			if (connection.isValid(1)) {
@@ -70,6 +72,22 @@ public class DBUtils {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		System.out.println("DBUtils.commitTransaction(): Committed");
+	}
+
+	public void rollbackTransaction() {
+		System.out.println("DBUtils.rollbackTransaction(): Rolling back");
+		try {
+			closeAllStatements();
+			if (connection.isValid(1)) {
+				connection.rollback();
+				connection.close();
+				thisObject = null;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		System.out.println("DBUtils.rollbackTransaction(): Rolled back");
 	}
 
 	/**
