@@ -1,6 +1,9 @@
 package org.ideoholic.datamigrator.excelservice;
 
+
 import java.util.Date;
+
+import org.apache.poi.ss.format.CellFormatType;
 
 //import java.util.Date;
 
@@ -11,40 +14,61 @@ public class LoanDataRow {
 	private Date disbursedDate;
 	private Date expiryDate;
 	private int loanOS;
-	private int accountNumber;
+	private String accountNumber;
 	private String dName;
 
 	public LoanDataRow(Row row) {
 		setDisbursedDate(getCellValueDate(row, 1));
 		setExpiryDate(getCellValueDate(row, 8));
 		setAccountNumber(getCellValueNo(row, 13));
-		setLoanOS(getCellValueNo(row, 26));
+		setLoanOS(getCellValueNoLoan(row, 27));
 		setDName(getCellValue(row, 10));
 	}
 
-	private int getCellValueNo(Row row, int columnNum) {
-		int result = 0;
-		String cellValue = getCellValue(row, columnNum);
+	private String getCellValueNo(Row row, int columnNum) {
+		String result ="" ;
+		
+		Cell cell = row.getCell(columnNum);
+		switch (cell.getCellType()) {
+        case Cell.CELL_TYPE_STRING:
+        	result = cell.getStringCellValue();
+        	System.out.print("String "+cell.getStringCellValue() + "\t");
+            break;
+        case Cell.CELL_TYPE_NUMERIC:
+        	result =  Double.toString(cell.getNumericCellValue());
+        	int test = (int) cell.getNumericCellValue();
+        	result = Integer.toString(test);
+            System.out.print("Number "+cell.getNumericCellValue() + "\t");
+            break;
+        default :
+     
+        }
+		/*if (cell != null) {
+			
+			result = (String) cell.getStringCellValue();
+			System.out.println("Result No"+result);
+		}*/
+		return result;
+		
+	}
+	private int getCellValueNoLoan(Row row, int columnNum) {
+		int result =0;
 		Cell cell = row.getCell(columnNum);
 		if (cell != null) {
-			try {
-				result = Integer.parseInt(cellValue);
-			} catch (Exception ex) {
-				System.out.println("LoanDataRow.getCellValueNo()::Exception while parsing result:" + ex.getMessage());
-				System.out.println("LoanDataRow.getCellValueNo()::row:" + row + " column:" + columnNum);
-			}
-			System.out.println("LoanDataRow.getCellValueNo()::Result No:" + result);
+			
+			result = (int) cell.getNumericCellValue();
+			System.out.println("Result No"+result);
 		}
 		return result;
+		
 	}
 
 	private String getCellValue(Row row, int columnNum) {
-		System.out.println("LoanDataRow.getCellValue()::row:" + row + " column:" + columnNum);
-		String result = "";
+		String result = "" ;
 		Cell cell = row.getCell(columnNum);
 		if (cell != null) {
 			result = cell.getStringCellValue();
-			System.out.println("LoanDataRow.getCellValue()::row:Result Value" + result);
+			System.out.println("Result No"+result);
 		}
 		return result;
 	}
@@ -79,24 +103,24 @@ public class LoanDataRow {
 		return loanOS;
 	}
 
-	public void setLoanOS(int loanOS) {
-		this.loanOS = loanOS;
+	public void setLoanOS(int i) {
+		this.loanOS = i;
 	}
 
-	public int getAccountNumber() {
+	public String getAccountNumber() {
 		return accountNumber;
 	}
 
-	public void setAccountNumber(int accountNumber) {
-		this.accountNumber = accountNumber;
+	public void setAccountNumber(String string) {
+		this.accountNumber = string;
 	}
 
 	public String getDName() {
 		return dName;
 	}
 
-	public void setDName(String dName) {
-		this.dName = dName;
+	public void setDName(String string) {
+		this.dName = string;
 	}
 
 }
