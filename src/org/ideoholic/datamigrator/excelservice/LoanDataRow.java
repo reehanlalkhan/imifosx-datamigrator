@@ -11,67 +11,54 @@ public class LoanDataRow {
 	private Date disbursedDate;
 	private Date expiryDate;
 	private int loanOS;
-	private int accountNumber;	
+	private int accountNumber;
 	private String dName;
+
 	public LoanDataRow(Row row) {
-		setDisbursedDate(getCellValueDD(row, 1));
-		setExpiryDate(getCellValueED(row, 8));
-		setAccountNumber(getCellValueNo(row,13));
-		setLoanOS(getCellValue(row, 27));
-		setDName(getCellValueDname(row,10));
+		setDisbursedDate(getCellValueDate(row, 1));
+		setExpiryDate(getCellValueDate(row, 8));
+		setAccountNumber(getCellValueNo(row, 13));
+		setLoanOS(getCellValueNo(row, 26));
+		setDName(getCellValue(row, 10));
 	}
 
 	private int getCellValueNo(Row row, int columnNum) {
-		int result = 0 ;
-		Cell cell = row.getCell(columnNum);
-		if (cell != null) {
-			result = (int) cell.getNumericCellValue();
-			System.out.println("Result No"+result);
-		}
-		return result;
-	}
-	
-	private int getCellValue(Row row, int columnNum) {
 		int result = 0;
+		String cellValue = getCellValue(row, columnNum);
 		Cell cell = row.getCell(columnNum);
 		if (cell != null) {
-			result = (int) cell.getNumericCellValue();
-			System.out.println("Result Value"+result);
+			try {
+				result = Integer.parseInt(cellValue);
+			} catch (Exception ex) {
+				System.out.println("LoanDataRow.getCellValueNo()::Exception while parsing result:" + ex.getMessage());
+				System.out.println("LoanDataRow.getCellValueNo()::row:" + row + " column:" + columnNum);
+			}
+			System.out.println("LoanDataRow.getCellValueNo()::Result No:" + result);
 		}
 		return result;
 	}
-	
-	private Date getCellValueDD(Row row, int columnNum) {
-		Date result = new Date();
-		Cell cell = row.getCell(columnNum);
-		if (cell != null) {
-			result = cell.getDateCellValue();
-			System.out.println("Result DD"+result);
-		}
-		return result;
-	}
-	
-	private Date getCellValueED(Row row, int columnNum) {
-		Date result = new Date();
-		Cell cell = row.getCell(columnNum);
-		if (cell != null) {
-			result = cell.getDateCellValue();
-			System.out.println("Result ED"+result);
-		}
-		return result;
-	}
-	
 
-	private String getCellValueDname(Row row, int columnNum) {
-		String result = "" ;
+	private String getCellValue(Row row, int columnNum) {
+		System.out.println("LoanDataRow.getCellValue()::row:" + row + " column:" + columnNum);
+		String result = "";
 		Cell cell = row.getCell(columnNum);
 		if (cell != null) {
 			result = cell.getStringCellValue();
-			System.out.println("Result No"+result);
+			System.out.println("LoanDataRow.getCellValue()::row:Result Value" + result);
 		}
 		return result;
 	}
-	
+
+	private Date getCellValueDate(Row row, int columnNum) {
+		Date result = new Date();
+		Cell cell = row.getCell(columnNum);
+		if (cell != null) {
+			result = cell.getDateCellValue();
+			System.out.println("LoanDataRow.getCellValueDate()::row:Result DD" + result);
+		}
+		return result;
+	}
+
 	public Date getDisbursedDate() {
 		return disbursedDate;
 	}
@@ -79,7 +66,7 @@ public class LoanDataRow {
 	public void setDisbursedDate(Date disbursedDate) {
 		this.disbursedDate = disbursedDate;
 	}
-	
+
 	public Date getExpiryDate() {
 		return expiryDate;
 	}
@@ -87,7 +74,7 @@ public class LoanDataRow {
 	public void setExpiryDate(Date expiryDate) {
 		this.expiryDate = expiryDate;
 	}
-	
+
 	public int getLoanOS() {
 		return loanOS;
 	}
@@ -95,7 +82,7 @@ public class LoanDataRow {
 	public void setLoanOS(int loanOS) {
 		this.loanOS = loanOS;
 	}
-	
+
 	public int getAccountNumber() {
 		return accountNumber;
 	}
@@ -103,7 +90,7 @@ public class LoanDataRow {
 	public void setAccountNumber(int accountNumber) {
 		this.accountNumber = accountNumber;
 	}
-	
+
 	public String getDName() {
 		return dName;
 	}
@@ -111,5 +98,5 @@ public class LoanDataRow {
 	public void setDName(String dName) {
 		this.dName = dName;
 	}
-	
+
 }
