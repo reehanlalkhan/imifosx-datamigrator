@@ -31,6 +31,13 @@ public class MemberNameUtil {
 		partTwo = removeLastCharOptional(partTwo);
 		return Pair.of(partOne, partTwo);
 	}
+	
+	public static boolean checkMemberName(String name) {
+		if(name == null || name.isEmpty()) {
+			return false;
+		}
+		return true;
+	}
 
 	public static void main(String[] args) {
 		Pair<String, String> name;

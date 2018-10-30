@@ -11,6 +11,7 @@ import org.ideoholic.datamigrator.utils.Constants;
 import org.ideoholic.datamigrator.utils.DBUtils;
 import org.ideoholic.datamigrator.utils.DateUtils;
 import org.ideoholic.datamigrator.utils.ExcelReaderUtils;
+import org.ideoholic.datamigrator.utils.MemberNameUtil;
 
 public class SavingsAccountImporter implements Constants {
 
@@ -28,9 +29,12 @@ public class SavingsAccountImporter implements Constants {
 			SavingsAccountRow currentRow = excelIterator.next();
 			String name = currentRow.getName();
 			int amount = currentRow.getAmount();
+			if(!MemberNameUtil.checkMemberName(name)) {
+				continue;
+			}
 			BigDecimal clientId = getClientId(name);
 
-			System.out.println("SAVINGS ACCOUNT PRODUCT ID:=" + inputValue2);
+			System.out.println("SavingsAccountImporter.importSavingsAccount()::SAVINGS ACCOUNT PRODUCT ID:=" + inputValue2);
 
 			int product_id_savings;
 			try {
@@ -55,8 +59,7 @@ public class SavingsAccountImporter implements Constants {
 			double nm = 0;
 			int version = 1;
 
-			String account_no_string = "00000122";
-			int y = Integer.parseInt(account_no_string) + 1;
+			int y = getCurrentMaxSavingsAccountId(0) + 1;
 			String accountNumber = String.format("%09d", y);
 
 			short transaction_type_enum = 1;
@@ -77,13 +80,29 @@ public class SavingsAccountImporter implements Constants {
 					interest_calculation_days_in_year_type_enum, account_balance_derived, version);
 			DBUtils.getInstance().commitTransaction();
 
-			int savings_account_id = getSavingsAccountId(clientId);
+			int savings_account_id = getSavingsAccountId(clientId, product_id_savings);
 			insertSavingAccountTransaction(savings_account_id, OFFICE_ID, transaction_type_enum, IS_REVERSED,
 					transaction_date, amount, balance_end_date_derived, balance_number_of_days_derived,
 					running_balance_derived, cumulative_balance_derived_new, created_date, APPUSER_ID, is_manual);
 			DBUtils.getInstance().commitTransaction();
 		}
 
+	}
+	
+	public int getCurrentMaxSavingsAccountId(int accountNumber) throws ClassNotFoundException, SQLException {
+		BigDecimal savingsId = null;
+		String sql = "select max(account_no) from m_savings_account";
+		ResultSet result = DBUtils.getInstance().executeQueryStatement(sql);
+		if (result.next()) {
+			savingsId = result.getBigDecimal(1);
+		} else {
+			System.out.println(
+					"MemberDataImporter.getCurrentMaxClientId()::No max ID found from the client table, returning:"
+							+ accountNumber);
+			savingsId = new BigDecimal(accountNumber);
+		}
+		System.out.println("SavingsAccountImporter.getCurrentMaxSavingsAccountId()::MemberDataImporter.getCurrentMaxClientId()::Fetched max client ID:" + savingsId);
+		return savingsId.intValue();
 	}
 
 	public BigDecimal getClientId(String display_name) throws ClassNotFoundException, SQLException {
@@ -93,11 +112,11 @@ public class SavingsAccountImporter implements Constants {
 		if (result.next()) {
 			clientId = result.getBigDecimal(1);
 		} else {
-			System.out.println("No id for the display name");
+			System.out.println("SavingsAccountImporter.getClientId()::No id for the display name");
 			throw new SQLException(
 					"Client insertion has failed, no client ID got generated for Display Name:" + display_name);
 		}
-		System.out.println("Fetched client ID:" + clientId);
+		System.out.println("SavingsAccountImporter.getClientId()::Fetched client ID:" + clientId);
 		return clientId;
 	}
 
@@ -117,7 +136,7 @@ public class SavingsAccountImporter implements Constants {
 				+ interest_calculation_days_in_year_type_enum + "','" + account_balance_derived + "','" + version
 				+ "')";
 		DBUtils.getInstance().executePreparedStatement(sql);
-		System.out.println("INSERT QUERY TO SAVINGS ACCOUNT" + sql);
+		System.out.println("SavingsAccountImporter.insertSavingsAccount()::INSERT QUERY TO SAVINGS ACCOUNT" + sql);
 	}
 
 	private void insertSavingAccountTransaction(int savings_account_id, BigDecimal officeId,
@@ -134,21 +153,21 @@ public class SavingsAccountImporter implements Constants {
 				+ balance_end_date_derived + "','" + balance_number_of_days_derived + "','" + running_balance_derived
 				+ "','" + cumulative_balance_derived_new + "','" + created_date + "','" + APPUSER_ID + "','" + is_manual
 				+ "')";
-		System.out.println("sql for inserting in m_savings_account_transaction = " + sql);
+		System.out.println("SavingsAccountImporter.insertSavingAccountTransaction()::sql for inserting in m_savings_account_transaction = " + sql);
 		DBUtils.getInstance().executePreparedStatement(sql);
 
 	}
 
-	public int getSavingsAccountId(BigDecimal clientId) throws ClassNotFoundException, SQLException {
+	public int getSavingsAccountId(BigDecimal clientId, int productId) throws ClassNotFoundException, SQLException {
 		int savings_account_id = 0;
 		String sql = "select id from m_savings_account where client_id=" + "'" + clientId + "'" + "AND product_id="
-				+ "'" + 2 + "'";
+				+ "'" + productId + "'";
 		ResultSet result = DBUtils.getInstance().executeQueryStatement(sql);
-		System.out.println("Get Savings account Id Query=:" + sql);
+		System.out.println("SavingsAccountImporter.getSavingsAccountId()::Get Savings account Id Query=:" + sql);
 		if (result.next()) {
 			savings_account_id = result.getInt(1);
 		} else {
-			System.out.println("No Savings Account id for the Client ID");
+			System.out.println("SavingsAccountImporter.getSavingsAccountId()::No Savings Account id for the Client ID");
 			throw new SQLException(
 					"Savings Transaction insertion has failed, no Savings Account id got generated for Client ID"
 							+ clientId);
