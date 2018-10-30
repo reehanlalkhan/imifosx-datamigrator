@@ -3,12 +3,12 @@ package org.ideoholic.datamigrator.excelservice;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
-public class LoanTransactionRow {
+public class SavingsTransactionRow {
 
 	private int amount;
 	private String name;
 	
-	public LoanTransactionRow(Row row) {
+	public SavingsTransactionRow(Row row) {
 		setName(getCellValueName(row, 2));
 		setAmount(getCellValueAmount(row, 3));
 	}
@@ -24,7 +24,7 @@ public class LoanTransactionRow {
 	
 
 	private String getCellValueName(Row row, int columnNum) {
-        String result = "" ;
+		String result = "" ;
 		Cell cell = row.getCell(columnNum);
 		if (cell != null) {
 			result = cell.getStringCellValue();
@@ -48,6 +48,4 @@ public class LoanTransactionRow {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	
 }

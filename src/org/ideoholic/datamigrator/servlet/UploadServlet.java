@@ -23,6 +23,8 @@ import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
 import org.ideoholic.datamigrator.excelservice.LoanDataImporter;
 import org.ideoholic.datamigrator.excelservice.LoanTransactionImporter;
 import org.ideoholic.datamigrator.excelservice.MemberDataImporter;
+import org.ideoholic.datamigrator.excelservice.SavingsAccountImporter;
+import org.ideoholic.datamigrator.excelservice.SavingsDataImporter;
 
 public class UploadServlet extends HttpServlet {
 
@@ -167,6 +169,15 @@ public class UploadServlet extends HttpServlet {
 			LoanTransactionImporter ldi = new LoanTransactionImporter(fullFilePath);
 			ldi.importTransactionData();
 		}
+		 else if ("Savings_Transaction_File".equals(userSelectedOption)) {
+				// all selected
+				SavingsDataImporter ldi = new SavingsDataImporter(fullFilePath);
+				ldi.importSavingsData();
+		}
+			 else if ("Savings_File".equals(userSelectedOption)) {
+				// all selected
+				SavingsAccountImporter ldi = new SavingsAccountImporter(fullFilePath);
+				ldi.importSavingsAccount();
 
 	}
 

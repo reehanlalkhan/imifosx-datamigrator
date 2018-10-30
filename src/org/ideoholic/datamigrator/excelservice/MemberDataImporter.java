@@ -56,8 +56,14 @@ public class MemberDataImporter implements Constants {
 
 			BigDecimal clientId = getClientId(accountNumber);
 
-			insertAddress(clientId, street);
-			insertMemberIdentifier(clientId, panNo);
+			
+			if(street!=null && !street.isEmpty()) {
+	 			insertAddress(clientId, street);
+				}
+				
+				if(panNo!=null && !panNo.isEmpty()) {
+	 			insertMemberIdentifier(clientId, panNo);
+				}
 		}
 		DBUtils.getInstance().commitTransaction();
 	}

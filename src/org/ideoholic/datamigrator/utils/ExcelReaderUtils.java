@@ -18,6 +18,10 @@ import org.ideoholic.datamigrator.excelservice.LoanTransactionRow;
 import org.ideoholic.datamigrator.excelservice.LoanTransactionRowIterator;
 import org.ideoholic.datamigrator.excelservice.MemberDataRow;
 import org.ideoholic.datamigrator.excelservice.MemberDataRowIterator;
+import org.ideoholic.datamigrator.excelservice.SavingsAccountRow;
+import org.ideoholic.datamigrator.excelservice.SavingsAccountRowIterator;
+import org.ideoholic.datamigrator.excelservice.SavingsTransactionRow;
+import org.ideoholic.datamigrator.excelservice.SavingsTransactionRowIterator;
 
 public class ExcelReaderUtils {
 	private Workbook workbook;
@@ -82,6 +86,41 @@ public class ExcelReaderUtils {
 		return new LoanTransactionRowIterator(loanList);
 	}
 
+	public Iterator<SavingsTransactionRow> getWorkBookIteratorSavingsTransaction(int sheetNum) {
+		List<SavingsTransactionRow> savingsList = new ArrayList<SavingsTransactionRow>();
+		Sheet sheet = workbook.getSheetAt(sheetNum);
+		Row row;
+
+		for (int i1 = 5; i1 <= sheet.getLastRowNum(); i1++) {
+			row = sheet.getRow(i1);
+			if (row != null) {
+				SavingsTransactionRow ltr = new SavingsTransactionRow(row);
+				savingsList.add(ltr);
+			} else {
+				System.out.println("No data in row"+i1);
+			}
+		}
+		closeWorkbook();
+		return new SavingsTransactionRowIterator(savingsList);
+	}
+	public Iterator<SavingsAccountRow> getWorkBookIteratorSavingsAccount(int sheetNum) {
+		List<SavingsAccountRow> savingsList = new ArrayList<SavingsAccountRow>();
+		Sheet sheet = workbook.getSheetAt(sheetNum);
+		Row row;
+
+		for (int i1 = 3; i1 <= sheet.getLastRowNum(); i1++) {
+			row = sheet.getRow(i1);
+			if (row != null) {
+				SavingsAccountRow ltr = new SavingsAccountRow(row);
+				savingsList.add(ltr);
+			} else {
+				System.out.println("No data in row"+i1);
+			}
+		}
+		closeWorkbook();
+		return new SavingsAccountRowIterator(savingsList);
+	}
+	
 	public void closeWorkbook() {
 		try {
 			input.close();

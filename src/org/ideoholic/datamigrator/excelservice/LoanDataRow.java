@@ -42,7 +42,7 @@ public class LoanDataRow {
 	}
 	
 	private Date getCellValueDD(Row row, int columnNum) {
-		Date result = null;
+		Date result = new Date();
 		Cell cell = row.getCell(columnNum);
 		if (cell != null) {
 			result = cell.getDateCellValue();
@@ -52,7 +52,7 @@ public class LoanDataRow {
 	}
 	
 	private Date getCellValueED(Row row, int columnNum) {
-		Date result = null;
+		Date result = new Date();
 		Cell cell = row.getCell(columnNum);
 		if (cell != null) {
 			result = cell.getDateCellValue();
@@ -63,7 +63,7 @@ public class LoanDataRow {
 	
 
 	private String getCellValueDname(Row row, int columnNum) {
-		String result = null ;
+		String result = "" ;
 		Cell cell = row.getCell(columnNum);
 		if (cell != null) {
 			result = cell.getStringCellValue();
