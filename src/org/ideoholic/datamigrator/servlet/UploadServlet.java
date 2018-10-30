@@ -47,6 +47,9 @@ public class UploadServlet extends HttpServlet {
 		File file;
 		String userSelectedOption = null;
 
+		String userInputedOption = null;
+		String inputValue=null;
+	
 		// Check that we have a file upload request
 		isMultipart = ServletFileUpload.isMultipartContent(request);
 		response.setContentType("text/html");
@@ -120,10 +123,35 @@ public class UploadServlet extends HttpServlet {
 					out.println("Uploaded is in memory: " + isInMemory + "<br>");
 					out.println("Uploaded size in bytes: " + sizeInBytes + "<br>");
 				} else {
-					userSelectedOption = fi.getString();
+					//userSelectedOption = fi.getString();
+					userInputedOption = fi.getFieldName();
+					if("f1".equalsIgnoreCase(fi.getFieldName())) {
+						userSelectedOption = fi.getString();
+					}
+					
+					if ("t1".equalsIgnoreCase(fi.getFieldName()))
+					{
+						if(!"".equalsIgnoreCase(fi.getString()))
+							
+						{
+							inputValue=fi.getString();	
+						}
+						
+						System.out.println("VALUE "+inputValue);
+					}
+					else if ("t2".equalsIgnoreCase(fi.getFieldName()))
+					{
+						if(inputValue==null)
+							{
+							inputValue=fi.getString();
+							}
+						System.out.println("VALUE "+inputValue);
+					}
+					
+					System.out.println("ALL USER INPUTED OPTIONS = : "+userSelectedOption);
 				}
 			}
-			runServiceBasedOnUserSelection(userSelectedOption, fullFilePath);
+			runServiceBasedOnUserSelection(userSelectedOption,fullFilePath,inputValue);
 			out.println("<form action='UploadServlet'>");
 			out.println("<button>Upload Another File</button>");
 			out.println("</form>");
@@ -169,7 +197,7 @@ public class UploadServlet extends HttpServlet {
 		}
 	}
 
-	private void runServiceBasedOnUserSelection(String userSelectedOption, String fullFilePath)
+	private void runServiceBasedOnUserSelection(String userSelectedOption, String fullFilePath, String inputValue)
 			throws IOException, ClassNotFoundException, ParseException, SQLException {
 		if ("Member_File".equals(userSelectedOption)) {
 			// Official selected
@@ -180,7 +208,7 @@ public class UploadServlet extends HttpServlet {
 			// all selected
 			System.out.println("in loan file" + userSelectedOption);
 			LoanDataImporter ldi = new LoanDataImporter(fullFilePath);
-			ldi.importLoanData();
+			ldi.importLoanData(inputValue);
 		} else if ("Loan_Transaction_File".equals(userSelectedOption)) {
 			// all selected
 			LoanTransactionImporter ldi = new LoanTransactionImporter(fullFilePath);
@@ -192,7 +220,7 @@ public class UploadServlet extends HttpServlet {
 		} else if ("Savings_File".equals(userSelectedOption)) {
 			// all selected
 			SavingsAccountImporter ldi = new SavingsAccountImporter(fullFilePath);
-			ldi.importSavingsAccount();
+			ldi.importSavingsAccount(inputValue);
 		}
 	}
 

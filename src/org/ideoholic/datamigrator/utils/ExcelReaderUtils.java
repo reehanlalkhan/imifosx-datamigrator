@@ -108,7 +108,7 @@ public class ExcelReaderUtils {
 		Sheet sheet = workbook.getSheetAt(sheetNum);
 		Row row;
 
-		for (int i1 = 3; i1 <= sheet.getLastRowNum(); i1++) {
+		for (int i1 = 10; i1 <= sheet.getLastRowNum(); i1++) {
 			row = sheet.getRow(i1);
 			if (row != null) {
 				SavingsAccountRow ltr = new SavingsAccountRow(row);

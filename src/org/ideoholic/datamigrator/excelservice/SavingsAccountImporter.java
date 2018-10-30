@@ -20,7 +20,7 @@ public class SavingsAccountImporter implements Constants{
 		excelReader = new ExcelReaderUtils(excelFileName);
 	}
 	
-	public void importSavingsAccount() throws ParseException, ClassNotFoundException, SQLException {
+	public void importSavingsAccount(String inputValue2) throws ParseException, ClassNotFoundException, SQLException {
 		// This line will set account number start string to 0 if no number is passed
 
 		Iterator<SavingsAccountRow> excelIterator = excelReader.getWorkBookIteratorSavingsAccount(0);
@@ -29,8 +29,11 @@ public class SavingsAccountImporter implements Constants{
 			String name = currentRow.getName();
 			int amount = currentRow.getAmount();
 			BigDecimal clientId = getClientId(name);
+			
+			System.out.println("SAVINGS ACCOUNT PRODUCT ID:="+inputValue2);
+			
 
-			 int product_id_savings =2;
+			 int product_id_savings =Integer.parseInt(inputValue2);
 			 short status_enum=300;
 			 short sub_status_enum=0;
 			 short account_type_enum=1;
@@ -46,7 +49,7 @@ public class SavingsAccountImporter implements Constants{
 			double nm = 0;
 			int version = 1;
 			
-			String account_no_string = "00000120";
+			String account_no_string = "00000122";
 			int y = Integer.parseInt(account_no_string) + 1;
 			String accountNumber = String.format("%09d", y);
 

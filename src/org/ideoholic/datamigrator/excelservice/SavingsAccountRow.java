@@ -8,8 +8,8 @@ public class SavingsAccountRow {
 	private String name;
 	
 	public SavingsAccountRow(Row row) {
-		setName(getCellValueName(row, 1));
-		setAmount(getCellValueAmount(row, 2));
+		setName(getCellValueName(row, 6));
+		setAmount(getCellValueAmount(row, 13));
 	}
 	private int getCellValueAmount(Row row, int columnNum) {
 		int result = 0 ;

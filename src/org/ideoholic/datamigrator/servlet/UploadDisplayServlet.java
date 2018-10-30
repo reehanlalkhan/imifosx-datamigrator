@@ -25,7 +25,11 @@ public class UploadDisplayServlet extends HttpServlet {
 				"  <form id='fileUploadForm' action = 'UploadServlet' method = 'POST' enctype = 'multipart/form-data'>");
 		out.println("<input type = 'radio' name = \"f1\" id =\"11\" value=\"Member_File\">Member Creation<br> "); 
 		out.println( "<input type = \"radio\" name = \"f1\" id =\"12\" value=\"Loan_File\"> Loan Creation<br>");
+		out.println( "<input type = \"text\" name = \"t1\" id =\"101\" > <br>"); 
 		out.println( "<input type = \"radio\" name = \"f1\" id =\"13\" value=\"Loan_Transaction_File\"> Loan Transaction<br>");
+		out.println( "<input type = \"radio\" name = \"f1\" id =\"14\" value=\"Savings_File\"> Savings Account<br>");
+		out.println( "<input type = \"text\" name = \"t2\" id =\"102\" > <br>");
+		out.println( "<input type = \"radio\" name = \"f1\" id =\"15\" value=\"Savings_Transaction_File\"> Savings Transaction<br>");
 		out.println("     <input type = 'file' name = 'file' size = '50' />");
 		out.println("     <br />");
 		out.println("     <input type = 'submit' value = 'Upload File' />");
