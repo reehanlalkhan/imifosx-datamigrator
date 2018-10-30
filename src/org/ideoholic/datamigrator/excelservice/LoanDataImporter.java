@@ -29,6 +29,7 @@ public class LoanDataImporter implements Constants {
 	public void importLoanData(String inputValue) throws ParseException, ClassNotFoundException, SQLException {
 		// This line will set account number start string to 0 if no number is passed
 
+		
 		Iterator<LoanDataRow> excelIterator = excelReader.getWorkBookIteratorLoan(0);
 		while (excelIterator.hasNext()) {
 			LoanDataRow currentRow = excelIterator.next();
