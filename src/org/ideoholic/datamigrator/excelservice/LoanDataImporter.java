@@ -33,7 +33,7 @@ public class LoanDataImporter implements Constants {
 		Iterator<LoanDataRow> excelIterator = excelReader.getWorkBookIteratorLoan(0);
 		while (excelIterator.hasNext()) {
 			LoanDataRow currentRow = excelIterator.next();
-			int y = 18;
+			int y = 21;
 			String account_no = String.format("%09d", y);
 			String display_name = currentRow.getDName();
 			int product_id;
@@ -49,6 +49,8 @@ public class LoanDataImporter implements Constants {
 			Date disbursedDate = currentRow.getDisbursedDate();
 			Date expiryDate = currentRow.getExpiryDate();
 			double loanOS = currentRow.getLoanOS();
+			double scOS = currentRow.getScOS();
+			System.out.println("----SERVICE CHARGE----"+scOS);
 			String principal_amount_proposed = String.format("%.4f", loanOS);
 			String principal_amount = String.format("%.4f", loanOS);
 			String approved_principal = String.format("%.4f", loanOS);
@@ -66,6 +68,26 @@ public class LoanDataImporter implements Constants {
 			String maturedon_date = DateUtils.getCurrentDateAsSqlDate(expiryDate);
 			String principal_disbursed_derived = String.format("%.4f", loanOS);
 			String principal_outstanding_derived = String.format("%.4f", loanOS);
+			
+			Calendar startCalendar = new GregorianCalendar();
+			startCalendar.setTime(disbursedon1_date);
+			Calendar endCalendar = new GregorianCalendar();
+			endCalendar.setTime(expiryDate);
+			int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
+			int diffMonth = diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
+			System.out.println("No Of Months remaining: " + diffMonth);
+			int amt_monthly_deduction = (int) (loanOS / diffMonth);
+			System.out.println("Amount Paid Every Month " + amt_monthly_deduction);
+			int new_loanOs;
+	
+			
+			BigDecimal charge = new BigDecimal(scOS);
+			BigDecimal loan_principal = new BigDecimal(loanOS);
+			BigDecimal total_installments = new BigDecimal(diffMonth);
+			BigDecimal total_expected_costofloan_derived = charge.multiply(total_installments);
+			BigDecimal fee_charges_charged_derived = charge.multiply(total_installments);
+			BigDecimal fee_charges_outstanding_derived = charge.multiply(total_installments);
+			BigDecimal total_outstanding_derived = loan_principal.add(total_expected_costofloan_derived);
 
 			insertLoan(account_no, client_id, product_id, LOAN_STATUS_ID, LOAN_TYPE_ENUM, CURRENCY_CODE,
 					CURRENCY_DIGITS, CURRENCY_MULTIPLESOF, principal_amount_proposed, principal_amount,
@@ -74,7 +96,8 @@ public class LoanDataImporter implements Constants {
 					TERM_FREQUENCY, TERM_PERIOD_FREQUENCY_ENUM, REPAY_EVERY, REPAYMENT_PERIOD_FREQUENCY_ENUM,
 					NUMBER_OF_REPAYMENTS, AMORTIZATION_METHOD_ENUM, submittedon_date, approvedon_date,
 					expected_disbursedon_date, disbursedon_date, DISBURSEDON_USERID, expected_maturedon_date,
-					maturedon_date, principal_disbursed_derived, principal_outstanding_derived,
+					maturedon_date, principal_disbursed_derived, principal_outstanding_derived,fee_charges_charged_derived
+					,fee_charges_outstanding_derived,total_expected_costofloan_derived,total_outstanding_derived,
 					LOAN_TRANSACTION_STRATEGY_ID, DAYS_IN_MONTH_ENUM, DAYS_IN_YEAR_ENUM, VERSION);
 
 			DBUtils.getInstance().commitTransaction();
@@ -91,6 +114,16 @@ public class LoanDataImporter implements Constants {
 			String amount1 = String.format("%.4f", nm);
 			String outstanding_loan_balance_derived1 = String.format("%.4f", nm);
 
+		/*	insertLoanCharge(loan_id, charge_id, is_penalty, charge_time_enum, charge_calculation_enum,
+					charge_payment_mode_enum, charge_amount_or_percentage, amount, amount_outstanding_derived,
+					is_paid_derived, waived, is_active);*/
+			
+			insertLoanCharge(loan_id, charge, total_expected_costofloan_derived);
+			
+		
+			
+			
+			
 			insertLoanTransaction(loan_id, OFFICE_ID, IS_REVERSED, transaction_type_enum, transaction_date, amount,
 					outstanding_loan_balance_derived, submitted_on_date, created_date, APPUSER_ID);
 			DBUtils.getInstance().commitTransaction();
@@ -101,16 +134,10 @@ public class LoanDataImporter implements Constants {
 			boolean completed_derived = false;
 			String lastmodified_date = DateUtils.getCurrentDateAsSqlDateHMS();
 
-			Calendar startCalendar = new GregorianCalendar();
-			startCalendar.setTime(disbursedon1_date);
-			Calendar endCalendar = new GregorianCalendar();
-			endCalendar.setTime(expiryDate);
-			int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
-			int diffMonth = diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
-			System.out.println("No Of Months remaining: " + diffMonth);
-			int amt_monthly_deduction = (int) (loanOS / diffMonth);
-			System.out.println("Amount Paid Every Month " + amt_monthly_deduction);
-			int new_loanOs;
+
+			BigDecimal fee_charges_amount = charge;
+			
+			
 			for (short j = 0; j < diffMonth; j++) {
 				new_loanOs = (int) (loanOS - amt_monthly_deduction * j);
 				System.out.println("NEWLOANOS" + new_loanOs);
@@ -127,7 +154,7 @@ public class LoanDataImporter implements Constants {
 					duedate = sdf.format(c.getTime());
 					String duedate1 = sdf.format(d.getTime());
 					short k = (short) (j + 1);
-					insertRepaymentSchedule(loan_id, duedate1, duedate, k, amt_monthly_deduction, completed_derived,
+					insertRepaymentSchedule(loan_id, duedate1, duedate, k, amt_monthly_deduction, fee_charges_amount,completed_derived,
 							CREATEDBY_ID, created_date, lastmodified_date, LASTMODIFIEDBY_ID,
 							RECALCULATED_INTEREST_COMPONENT);
 					System.out.println("Monthly Payment  " + amt_monthly_deduction);
@@ -136,7 +163,7 @@ public class LoanDataImporter implements Constants {
 				} else {
 					short p = (short) (j);
 					// double final_payment = amt_monthly_deduction + new_loanOs;
-					insertRepaymentSchedule1(loan_id, duedate, maturedon_date, p, new_loanOs, completed_derived,
+					insertRepaymentSchedule1(loan_id, duedate, maturedon_date, p, new_loanOs,fee_charges_amount, completed_derived,
 							CREATEDBY_ID, created_date, lastmodified_date, LASTMODIFIEDBY_ID,
 							RECALCULATED_INTEREST_COMPONENT);
 					DBUtils.getInstance().commitTransaction();
@@ -156,7 +183,7 @@ public class LoanDataImporter implements Constants {
 			short repayment_period_frequency_enum, short number_of_repayments, short amortization_method_enum,
 			String submittedon_date, String approvedon_date, String expected_disbursedon_date, String disbursedon_date,
 			int disbursedon_userid, String expected_maturedon_date, String maturedon_date,
-			String principal_disbursed_derived, String principal_outstanding_derived, int loan_transaction_strategy_id,
+			String principal_disbursed_derived, String principal_outstanding_derived, BigDecimal fee_charges_charged_derived, BigDecimal fee_charges_outstanding_derived, BigDecimal total_expected_costofloan_derived, BigDecimal total_outstanding_derived, int loan_transaction_strategy_id,
 			short days_in_month_enum, short days_in_year_enum, int version)
 			throws SQLException, ClassNotFoundException {
 		// String currentDate = DateUtils.getCurrentDateAsSqlDateString();
@@ -165,7 +192,8 @@ public class LoanDataImporter implements Constants {
 				+ "					annual_nominal_interest_rate,interest_method_enum,\n"
 				+ "					interest_calculated_in_period_enum,term_frequency,term_period_frequency_enum,repay_every,\n"
 				+ "					repayment_period_frequency_enum,number_of_repayments,amortization_method_enum,submittedon_date,approvedon_date,expected_disbursedon_date,\n"
-				+ "					disbursedon_date,disbursedon_userid,expected_maturedon_date,maturedon_date,principal_disbursed_derived,principal_outstanding_derived,\n"
+				+ "					disbursedon_date,disbursedon_userid,expected_maturedon_date,maturedon_date,principal_disbursed_derived,"
+				+ "principal_outstanding_derived,fee_charges_charged_derived,fee_charges_outstanding_derived,total_expected_costofloan_derived,total_outstanding_derived,\n"
 				+ "					loan_transaction_strategy_id,days_in_month_enum,days_in_year_enum,version) VALUES('"
 				+ account_no + "'," + "'" + client_id + "','" + product_id + "','" + loan_status_id + "','"
 				+ loan_type_enum + "','" + currency_code + "','" + currency_digits + "','" + currency_multiplesof
@@ -177,7 +205,7 @@ public class LoanDataImporter implements Constants {
 				+ "','" + amortization_method_enum + "','" + submittedon_date + "','" + approvedon_date + "','"
 				+ expected_disbursedon_date + "','" + disbursedon_date + "','" + disbursedon_userid + "','"
 				+ expected_maturedon_date + "','" + maturedon_date + "','" + principal_disbursed_derived + "','"
-				+ principal_outstanding_derived + "','" + loan_transaction_strategy_id + "','" + days_in_month_enum
+				+ principal_outstanding_derived + "','"+fee_charges_charged_derived+"','"+fee_charges_outstanding_derived+"','"+total_expected_costofloan_derived+"','"+total_outstanding_derived+"','" + loan_transaction_strategy_id + "','" + days_in_month_enum
 				+ "','" + days_in_year_enum + "','" + version + "')";
 		DBUtils.getInstance().executePreparedStatement(sql);
 
@@ -242,13 +270,13 @@ public class LoanDataImporter implements Constants {
 	}
 
 	public void insertRepaymentSchedule(BigDecimal loan_id, String duedate1, String duedate, short j,
-			double amt_monthly_deduction, boolean completed_derived, BigInteger createdby_id, String created_date,
+			double amt_monthly_deduction, BigDecimal fee_charges_amount, boolean completed_derived, BigInteger createdby_id, String created_date,
 			String lastmodified_date, BigInteger lastmodifiedby_id, byte recalculated_interest_component)
 			throws SQLException, ClassNotFoundException {
 		String sql = "insert into m_loan_repayment_schedule(loan_id,fromdate,duedate,installment,principal_amount,\n"
-				+ "completed_derived,createdby_id,created_date,\n"
+				+ "completed_derived,fee_charges_amount,createdby_id,created_date,\n"
 				+ "lastmodified_date,lastmodifiedby_id,recalculated_interest_component) values ('" + loan_id + "','"
-				+ duedate1 + "','" + duedate + "','" + j + "','" + amt_monthly_deduction + "'," + 0 + ",'"
+				+ duedate1 + "','" + duedate + "','" + j + "','" + amt_monthly_deduction + "'," + 0 + ",'"+fee_charges_amount+"','"
 				+ createdby_id + "','" + created_date + "','" + lastmodified_date + "','" + lastmodifiedby_id + "','"
 				+ recalculated_interest_component + "')";
 		System.out.println("sql" + sql);
@@ -257,18 +285,35 @@ public class LoanDataImporter implements Constants {
 	}
 
 	public void insertRepaymentSchedule1(BigDecimal loan_id, String duedate, String maturedon_date, short j,
-			double new_loanOs, boolean completed_derived, BigInteger createdby_id, String created_date,
+			double new_loanOs, BigDecimal fee_charges_amount, boolean completed_derived, BigInteger createdby_id, String created_date,
 			String lastmodified_date, BigInteger lastmodifiedby_id, byte recalculated_interest_component)
 			throws SQLException, ClassNotFoundException {
 		String sql = "insert into m_loan_repayment_schedule(loan_id,fromdate,duedate,installment,principal_amount,\n"
-				+ "completed_derived,createdby_id,created_date,\n"
+				+ "completed_derived,fee_charges_amount,createdby_id,created_date,\n"
 				+ "lastmodified_date,lastmodifiedby_id,recalculated_interest_component) values ('" + loan_id + "','"
-				+ duedate + "','" + maturedon_date + "','" + (j + 1) + "','" + new_loanOs + "'," + 0 + ",'"
+				+ duedate + "','" + maturedon_date + "','" + (j + 1) + "','" + new_loanOs + "'," + 0 + ",'"+fee_charges_amount+"','"
 				+ createdby_id + "','" + created_date + "','" + lastmodified_date + "','" + lastmodifiedby_id + "','"
 				+ recalculated_interest_component + "')";
 		System.out.println("sql1" + sql);
 		DBUtils.getInstance().executePreparedStatement(sql);
 
 	}
+	
+	
+	public void insertLoanCharge(BigDecimal loan_id, BigDecimal charge, BigDecimal total_expected_costofloan_derived)
+			throws SQLException, ClassNotFoundException {
+		String sql = "insert into m_loan_charge(loan_id, charge_id, is_penalty, charge_time_enum, charge_calculation_enum,\n" + 
+				"			charge_payment_mode_enum, charge_amount_or_percentage, amount, amount_outstanding_derived,\n" + 
+				"			is_paid_derived, waived, is_active)values ('" + loan_id + "','"
+				+ 1 + "','" + 0 + "','" + 8 + "','" + 1 + "'," + 0 + ",'"
+				+ charge + "','" + total_expected_costofloan_derived + "','" + total_expected_costofloan_derived + "','" + 0 + "','"
+				+ 0 + "','"+1+"')";
+		System.out.println("sql1" + sql);
+		DBUtils.getInstance().executePreparedStatement(sql);
 
+	}	 
+
+
+	
+	
 }

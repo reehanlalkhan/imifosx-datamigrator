@@ -14,6 +14,7 @@ public class LoanDataRow {
 	private Date disbursedDate;
 	private Date expiryDate;
 	private int loanOS;
+	private int scOS;
 	private String accountNumber;
 	private String dName;
 
@@ -22,6 +23,8 @@ public class LoanDataRow {
 		setExpiryDate(getCellValueDate(row, 8));
 		setAccountNumber(getCellValueNo(row, 13));
 		setLoanOS(getCellValueNoLoan(row, 27));
+		setScOS(getCellValueNoLoan(row, 29));
+		
 		setDName(getCellValue(row, 10));
 	}
 
@@ -105,6 +108,13 @@ public class LoanDataRow {
 
 	public void setLoanOS(int i) {
 		this.loanOS = i;
+	}
+	public int getScOS() {
+		return scOS;
+	}
+
+	public void setScOS(int j) {
+		this.scOS = j;
 	}
 
 	public String getAccountNumber() {
