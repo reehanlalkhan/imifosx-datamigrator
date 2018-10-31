@@ -49,6 +49,7 @@ public class UploadServlet extends HttpServlet {
 
 		String userInputedOption = null;
 		String inputValue=null;
+		String inputDate=null;
 	
 		// Check that we have a file upload request
 		isMultipart = ServletFileUpload.isMultipartContent(request);
@@ -141,17 +142,41 @@ public class UploadServlet extends HttpServlet {
 					}
 					else if ("t2".equalsIgnoreCase(fi.getFieldName()))
 					{
-						if(inputValue==null)
+						if(!"".equalsIgnoreCase(fi.getString()))
 							{
 							inputValue=fi.getString();
 							}
 						System.out.println("VALUE "+inputValue);
 					}
-					
+					else if ("tt1".equalsIgnoreCase(fi.getFieldName()))
+					{
+						if(!"".equalsIgnoreCase(fi.getString()))
+							{
+							inputValue=fi.getString();
+							}
+						System.out.println("VALUE "+inputValue);
+					}
+					else if ("tt2".equalsIgnoreCase(fi.getFieldName()))
+					{
+						if(!"".equalsIgnoreCase(fi.getString()))
+							{
+							inputValue=fi.getString();
+							}
+						System.out.println("VALUE "+inputValue);
+						System.out.println("NO INPUT VALUE IN VARIABLE INPUT tt2");
+					}
+					else if ("tt3".equalsIgnoreCase(fi.getFieldName()))
+					{
+						
+							
+						inputDate=fi.getString();
+							
+						System.out.println("INPUT DATE "+inputDate);
+					}
 					System.out.println("ALL USER INPUTED OPTIONS = : "+userSelectedOption);
 				}
 			}
-			runServiceBasedOnUserSelection(userSelectedOption,fullFilePath,inputValue);
+			runServiceBasedOnUserSelection(userSelectedOption,fullFilePath,inputValue,inputDate);
 			out.println("<form action='UploadServlet'>");
 			out.println("<button>Upload Another File</button>");
 			out.println("</form>");
@@ -197,7 +222,7 @@ public class UploadServlet extends HttpServlet {
 		}
 	}
 
-	private void runServiceBasedOnUserSelection(String userSelectedOption, String fullFilePath, String inputValue)
+	private void runServiceBasedOnUserSelection(String userSelectedOption, String fullFilePath, String inputValue, String inputDate)
 			throws IOException, ClassNotFoundException, ParseException, SQLException {
 		if ("Member_File".equals(userSelectedOption)) {
 			// Official selected
@@ -212,11 +237,11 @@ public class UploadServlet extends HttpServlet {
 		} else if ("Loan_Transaction_File".equals(userSelectedOption)) {
 			// all selected
 			LoanTransactionImporter ldi = new LoanTransactionImporter(fullFilePath);
-			ldi.importTransactionData();
+			ldi.importTransactionData(inputValue);
 		} else if ("Savings_Transaction_File".equals(userSelectedOption)) {
 			// all selected
 			SavingsDataImporter ldi = new SavingsDataImporter(fullFilePath);
-			ldi.importSavingsData();
+			ldi.importSavingsData(inputValue,inputDate);
 		} else if ("Savings_File".equals(userSelectedOption)) {
 			// all selected
 			SavingsAccountImporter ldi = new SavingsAccountImporter(fullFilePath);

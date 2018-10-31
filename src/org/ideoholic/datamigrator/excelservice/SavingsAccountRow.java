@@ -1,21 +1,25 @@
 package org.ideoholic.datamigrator.excelservice;
 
+import java.math.BigDecimal;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
 public class SavingsAccountRow {
-	private int amount;
+	private BigDecimal amount;
 	private String name;
 	
 	public SavingsAccountRow(Row row) {
 		setName(getCellValueName(row, 6));
 		setAmount(getCellValueAmount(row, 13));
 	}
-	private int getCellValueAmount(Row row, int columnNum) {
-		int result = 0 ;
+	private BigDecimal getCellValueAmount(Row row, int columnNum) {
+		BigDecimal result = null ;
+		double var = 0.0;
 		Cell cell = row.getCell(columnNum);
 		if (cell != null) {
-			result = (int) cell.getNumericCellValue();
+			var = cell.getNumericCellValue();
+			  result = new BigDecimal(var);
 			System.out.println("Result No"+result);
 		}
 		return result;
@@ -32,11 +36,11 @@ public class SavingsAccountRow {
 		return result;
 	}
 	
-	public int getAmount() {
+	public BigDecimal getAmount() {
 		return amount;
 	}
 
-	public void setAmount(int amount) {
+	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
 

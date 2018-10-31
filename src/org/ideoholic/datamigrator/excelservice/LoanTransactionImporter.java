@@ -21,7 +21,7 @@ public class LoanTransactionImporter implements Constants {
 		excelReader = new ExcelReaderUtils(excelFileName);
 	}
 
-	public void importTransactionData() throws ParseException, ClassNotFoundException, SQLException {
+	public void importTransactionData(String inputValue) throws ParseException, ClassNotFoundException, SQLException {
 		Iterator<LoanTransactionRow> excelIterator = excelReader.getWorkBookIteratorLoanTransaction(0);
 		while (excelIterator.hasNext()) {
 			LoanTransactionRow currentRow = excelIterator.next();

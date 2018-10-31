@@ -9,8 +9,8 @@ public class SavingsTransactionRow {
 	private String name;
 	
 	public SavingsTransactionRow(Row row) {
-		setName(getCellValueName(row, 2));
-		setAmount(getCellValueAmount(row, 3));
+		setName(getCellValueName(row, 9));
+		setAmount(getCellValueAmount(row, 17));
 	}
 	private int getCellValueAmount(Row row, int columnNum) {
 		int result = 0 ;
