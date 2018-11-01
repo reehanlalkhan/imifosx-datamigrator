@@ -29,7 +29,7 @@ public class SavingsAccountImporter implements Constants {
 			SavingsAccountRow currentRow = excelIterator.next();
 			String name = currentRow.getName();
 			BigDecimal amount = currentRow.getAmount();
-
+			if(!name.isEmpty()) {
 			if (amount.compareTo(BigDecimal.ZERO) == -1) {
 				amount = amount.negate();
 			}
@@ -92,7 +92,7 @@ public class SavingsAccountImporter implements Constants {
 			DBUtils.getInstance().commitTransaction();
 
 		}
-
+		}
 	}
 
 	public int getCurrentMaxSavingsAccountId(int accountNumber) throws ClassNotFoundException, SQLException {
