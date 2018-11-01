@@ -3,7 +3,7 @@ package org.ideoholic.datamigrator.excelservice;
 
 import java.util.Date;
 
-import org.apache.poi.ss.format.CellFormatType;
+//import org.apache.poi.ss.format.CellFormatType;
 
 //import java.util.Date;
 
@@ -15,20 +15,21 @@ public class LoanDataRow {
 	private Date expiryDate;
 	private int loanOS;
 	private int scOS;
-	private String accountNumber;
+//	private String accountNumber;
 	private String dName;
 
 	public LoanDataRow(Row row) {
-		setDisbursedDate(getCellValueDate(row, 1));
-		setExpiryDate(getCellValueDate(row, 8));
-		setAccountNumber(getCellValueNo(row, 13));
-		setLoanOS(getCellValueNoLoan(row, 27));
-		setScOS(getCellValueNoLoan(row, 29));
+		setDisbursedDate(getCellValueDate(row, 0));
+		setExpiryDate(getCellValueDate(row, 3));
+		setDName(getCellValue(row, 4));
+	//	setAccountNumber(getCellValueNo(row, 5));
+		setLoanOS(getCellValueNoLoan(row, 12));
+		setScOS(getCellValueNoLoan(row, 13));
 		
-		setDName(getCellValue(row, 10));
+
 	}
 
-	private String getCellValueNo(Row row, int columnNum) {
+/*	private String getCellValueNo(Row row, int columnNum) {
 		String result ="" ;
 		
 		Cell cell = row.getCell(columnNum);
@@ -46,17 +47,18 @@ public class LoanDataRow {
         default :
      
         }
-		/*if (cell != null) {
+		if (cell != null) {
 			
 			result = (String) cell.getStringCellValue();
 			System.out.println("Result No"+result);
-		}*/
+		}
 		return result;
 		
-	}
+	}*/
 	private int getCellValueNoLoan(Row row, int columnNum) {
 		int result =0;
 		Cell cell = row.getCell(columnNum);
+		
 		if (cell != null) {
 			
 			result = (int) cell.getNumericCellValue();
@@ -116,14 +118,14 @@ public class LoanDataRow {
 	public void setScOS(int j) {
 		this.scOS = j;
 	}
-
+/*
 	public String getAccountNumber() {
 		return accountNumber;
 	}
 
 	public void setAccountNumber(String string) {
 		this.accountNumber = string;
-	}
+	}*/
 
 	public String getDName() {
 		return dName;
