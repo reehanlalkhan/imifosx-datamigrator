@@ -29,6 +29,12 @@ public class SavingsAccountImporter implements Constants {
 			SavingsAccountRow currentRow = excelIterator.next();
 			String name = currentRow.getName();
 			BigDecimal amount = currentRow.getAmount();
+			
+			if (amount.compareTo(BigDecimal.ZERO)== -1)
+			{
+				amount=amount.negate();
+			}
+			
 			if(!MemberNameUtil.checkMemberName(name)) {
 				continue;
 			}
@@ -51,6 +57,40 @@ public class SavingsAccountImporter implements Constants {
 
 			short interest_compounding_period_enum = 1;
 			short interest_calculation_type_enum = 1;
+			
+			short interest_posting_period_enum = 4;
+			short interest_calculation_days_in_year_type_enum = 365;
+			String submittedon_date = DateUtils.getCurrentDateAsSqlDateString();
+			String approvedon_date = DateUtils.getCurrentDateAsSqlDateString();
+			String activatedon_date = DateUtils.getCurrentDateAsSqlDateString();
+			double nm = 0;
+			int version = 1;
+			int y = getCurrentMaxSavingsAccountId(0) + 1;
+			String accountNumber = String.format("%09d", y);
+		
+		//	String account_no = String.format("%09d", y);
+			short transaction_type_enum = 1;
+			String transaction_date = DateUtils.getCurrentDateAsSqlDateString();
+			String balance_end_date_derived = DateUtils.getCurrentDateAsSqlDateString();
+			int balance_number_of_days_derived = 0;
+			BigDecimal cumulative_balance_derived_new = amount;
+			BigDecimal running_balance_derived = amount;
+			String created_date = DateUtils.getCurrentDateAsSqlDateHMS();
+			byte is_manual = 0;
+			BigDecimal account_balance_derived = amount;
+			String nominal_annual_interest_rate = String.format("%.4f", nm);
+			insertSavingsAccount(accountNumber, clientId, product_id_savings, status_enum, sub_status_enum,
+					account_type_enum, deposit_type_enum, submittedon_date, approvedon_date, activatedon_date,
+					CURRENCY_CODE, CURRENCY_DIGITS, nominal_annual_interest_rate, interest_compounding_period_enum,
+					interest_posting_period_enum, interest_calculation_type_enum,
+					interest_calculation_days_in_year_type_enum, account_balance_derived, version);
+			DBUtils.getInstance().commitTransaction();
+			int savings_account_id = getSavingsAccountId(clientId, product_id_savings);
+			insertSavingAccountTransaction(savings_account_id, OFFICE_ID, transaction_type_enum, IS_REVERSED,
+					transaction_date, amount, balance_end_date_derived, balance_number_of_days_derived,
+					running_balance_derived, cumulative_balance_derived_new, created_date, APPUSER_ID, is_manual);
+			DBUtils.getInstance().commitTransaction();
+			
 		}
 
 	}
