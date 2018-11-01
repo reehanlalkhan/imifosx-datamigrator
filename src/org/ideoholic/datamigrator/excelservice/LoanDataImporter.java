@@ -33,7 +33,7 @@ public class LoanDataImporter implements Constants {
 		Iterator<LoanDataRow> excelIterator = excelReader.getWorkBookIteratorLoan(0);
 		while (excelIterator.hasNext()) {
 			LoanDataRow currentRow = excelIterator.next();
-			int y = 21;
+			int y = 24;
 			String account_no = String.format("%09d", y);
 			String display_name = currentRow.getDName();
 			int product_id;
@@ -113,7 +113,10 @@ public class LoanDataImporter implements Constants {
 			short transaction_type_enum1 = 10;
 			String amount1 = String.format("%.4f", nm);
 			String outstanding_loan_balance_derived1 = String.format("%.4f", nm);
-
+			
+			BigDecimal fee_charges_portion_derived = total_expected_costofloan_derived;
+			BigDecimal amount_for_charge_transaction = total_expected_costofloan_derived; 
+			
 		/*	insertLoanCharge(loan_id, charge_id, is_penalty, charge_time_enum, charge_calculation_enum,
 					charge_payment_mode_enum, charge_amount_or_percentage, amount, amount_outstanding_derived,
 					is_paid_derived, waived, is_active);*/
@@ -129,6 +132,10 @@ public class LoanDataImporter implements Constants {
 			DBUtils.getInstance().commitTransaction();
 			insertLoanTransaction2(loan_id, OFFICE_ID, IS_REVERSED, transaction_type_enum1, transaction_date, amount1,
 					outstanding_loan_balance_derived1, submitted_on_date, created_date, APPUSER_ID);
+			DBUtils.getInstance().commitTransaction();
+			
+			insertLoanTransactionCharge(loan_id, OFFICE_ID, IS_REVERSED, transaction_type_enum1, transaction_date, amount_for_charge_transaction,
+					fee_charges_portion_derived, submitted_on_date, created_date, APPUSER_ID);
 			DBUtils.getInstance().commitTransaction();
 			String duedate = null;
 			boolean completed_derived = false;
@@ -238,6 +245,22 @@ public class LoanDataImporter implements Constants {
 
 	}
 
+	
+	public void insertLoanTransactionCharge(BigDecimal loan_id, BigDecimal office_id, byte is_reversed,
+			short transaction_type_enum1, String transaction_date, BigDecimal amount_for_charge_transaction,
+			BigDecimal fee_charges_portion_derived, String submitted_on_date, String created_date,
+			BigDecimal appuser_id) throws SQLException, ClassNotFoundException {
+		String sql = "INSERT into m_loan_transaction(loan_id,office_id,is_reversed,transaction_type_enum,\n"
+				+ "transaction_date,amount,fee_charges_portion_derived,\n"
+				+ "submitted_on_date,created_date,appuser_id)\n" + "values('" + loan_id + "','" + office_id + "','"
+				+ is_reversed + "','" + transaction_type_enum1 + "','" + transaction_date + "','" + amount_for_charge_transaction + "','"
+				+ fee_charges_portion_derived + "','" + submitted_on_date + "','" + created_date + "','"
+				+ appuser_id + "')";
+		DBUtils.getInstance().executePreparedStatement(sql);
+
+	}
+
+	
 	public BigDecimal getClientId(String display_name) throws ClassNotFoundException, SQLException {
 		BigDecimal clientId = null;
 		String sql = "select id from m_client where display_name=" + "'" + display_name + "'";
