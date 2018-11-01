@@ -33,8 +33,11 @@ public class LoanDataImporter implements Constants {
 		Iterator<LoanDataRow> excelIterator = excelReader.getWorkBookIteratorLoan(0);
 		while (excelIterator.hasNext()) {
 			LoanDataRow currentRow = excelIterator.next();
-			int y = 24;
+		//	int y = 24;
+		//	String account_no = String.format("%09d", y);
+			int y = getCurrentMaxLoanAccountId(0) + 1;
 			String account_no = String.format("%09d", y);
+			
 			String display_name = currentRow.getDName();
 			int product_id;
 			try {
@@ -181,6 +184,23 @@ public class LoanDataImporter implements Constants {
 		}
 	}
 
+	public int getCurrentMaxLoanAccountId(int accountNumber) throws ClassNotFoundException, SQLException {
+		BigDecimal LoanId = BigDecimal.ZERO;
+		String sql = "select max(account_no) from m_loan";
+		ResultSet result = DBUtils.getInstance().executeQueryStatement(sql);
+		
+		try {
+			if (result.next()) {
+				LoanId = result.getBigDecimal(1);
+			}
+		} catch (Exception e) {
+					System.out.println("MemberDataImporter.getCurrentMaxClientId()::No max ID found from the client table, returning:"+e);
+		}
+		return LoanId.intValue();
+	}
+	
+	
+	
 	public void insertLoan(String account_no, BigDecimal client_id, int product_id, short loan_status_id,
 			short loan_type_enum, String currency_code, short currency_digits, short currency_multiplesof,
 			String principal_amount_proposed, String principal_amount, String approved_principal,
