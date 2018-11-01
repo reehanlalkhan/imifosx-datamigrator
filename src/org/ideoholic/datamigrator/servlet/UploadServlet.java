@@ -228,7 +228,7 @@ public class UploadServlet extends HttpServlet {
 			// Official selected
 			System.out.println("in member file" + userSelectedOption);
 			MemberDataImporter mdi = new MemberDataImporter(fullFilePath);
-			mdi.importMemberData("00000020");
+			mdi.importMemberData("00000000");
 		} else if ("Loan_File".equals(userSelectedOption)) {
 			// all selected
 			System.out.println("in loan file" + userSelectedOption);

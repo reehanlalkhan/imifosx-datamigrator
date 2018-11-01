@@ -29,7 +29,7 @@ public class MemberDataRow {
 				result = cell.getDateCellValue();
 			}
 		} catch (Exception ex) {
-			System.out.println("Column:" + columnNum);
+			System.out.println("MemberDataRow.getDateCellValue(): Exception in column:" + columnNum);
 		}
 		return result;
 	}
@@ -42,7 +42,7 @@ public class MemberDataRow {
 				result = cell.getStringCellValue();
 			}
 		} catch (Exception ex) {
-			System.out.println("Column:" + columnNum);
+			System.out.println("MemberDataRow.getCellValue(): Exception in Column:" + columnNum);
 		}
 		return result;
 	}

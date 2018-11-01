@@ -185,18 +185,21 @@ public class LoanDataImporter implements Constants {
 	}
 
 	public int getCurrentMaxLoanAccountId(int accountNumber) throws ClassNotFoundException, SQLException {
-		BigDecimal LoanId = BigDecimal.ZERO;
+		BigDecimal loanId = BigDecimal.ZERO;
 		String sql = "select max(account_no) from m_loan";
 		ResultSet result = DBUtils.getInstance().executeQueryStatement(sql);
 		
 		try {
 			if (result.next()) {
-				LoanId = result.getBigDecimal(1);
+				loanId = result.getBigDecimal(1);
 			}
 		} catch (Exception e) {
 					System.out.println("MemberDataImporter.getCurrentMaxClientId()::No max ID found from the client table, returning:"+e);
 		}
-		return LoanId.intValue();
+		if(loanId == null) {
+			loanId = BigDecimal.ZERO;
+		}
+		return loanId.intValue();
 	}
 	
 	

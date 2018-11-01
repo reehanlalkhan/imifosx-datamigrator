@@ -17,6 +17,7 @@ import org.ideoholic.datamigrator.utils.Pair;
 
 public class MemberDataImporter implements Constants {
 	private final ExcelReaderUtils excelReader;
+	private String accountNumberString;
 
 	public MemberDataImporter(String excelFileName) throws IOException {
 		excelReader = new ExcelReaderUtils(excelFileName);
@@ -58,7 +59,7 @@ public class MemberDataImporter implements Constants {
 			nextClientId = nextClientId.add(new BigDecimal(1));
 			insertMember(OFFICE_ID, nextClientId, firstname, lastname, displayName, gender_cv_id, dateOfBirth);
 
-			BigDecimal clientId = getClientId(nextClientId);
+			BigDecimal clientId = getClientId(accountNumberString);
 
 			if (street != null && !street.isEmpty()) {
 				insertAddress(clientId, street);
@@ -84,21 +85,25 @@ public class MemberDataImporter implements Constants {
 			clientId = new BigDecimal(accountNumber);
 		}
 		System.out.println("MemberDataImporter.getCurrentMaxClientId()::Fetched max client ID:" + clientId);
+		if(clientId == null) {
+			return new BigDecimal(accountNumber);
+		}
 		return clientId;
 	}
 
 	public void insertMember(BigDecimal officeId, BigDecimal accountNumber, String firstname, String lastname,
 			String displayName, int genderCvv, String dateOfBirth) throws SQLException, ClassNotFoundException {
 		String currentDate = DateUtils.getCurrentDateAsSqlDateString();
+		accountNumberString = String.format("%09d", accountNumber.intValue());
 		String sql = "INSERT INTO m_client(office_id,account_no,activation_date,firstname,"
-				+ "lastname,display_name,gender_cv_id,date_of_birth) VALUES('" + officeId + "'," + "'" + accountNumber
+				+ "lastname,display_name,gender_cv_id,date_of_birth) VALUES('" + officeId + "'," + "'" + accountNumberString
 				+ "','" + currentDate + "','" + firstname + "','" + lastname + "','" + displayName + "','" + genderCvv
 				+ "','" + dateOfBirth + "')";
 		DBUtils.getInstance().executePreparedStatement(sql);
 
 	}
 
-	public BigDecimal getClientId(BigDecimal accountNumber) throws ClassNotFoundException, SQLException {
+	public BigDecimal getClientId(String accountNumber) throws ClassNotFoundException, SQLException {
 		BigDecimal clientId = null;
 		String sql = "select id from m_client where account_no=" + "'" + accountNumber + "'";
 		ResultSet result = DBUtils.getInstance().executeQueryStatement(sql);
