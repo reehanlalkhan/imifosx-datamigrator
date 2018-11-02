@@ -118,7 +118,7 @@ public class SavingsDataImporter implements Constants{
 
 	public BigDecimal getClientId(String display_name) throws ClassNotFoundException, SQLException {
 		BigDecimal clientId = BigDecimal.ZERO;
-		String sql = "select id from m_client where display_name=" + "'" + display_name + "'";
+		String sql = "select id from m_client where status_enum = 300 and display_name=" + "'" + display_name + "'";
 		ResultSet result = DBUtils.getInstance().executeQueryStatement(sql);
 		try {
 			if (result.next()) {
