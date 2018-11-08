@@ -29,6 +29,8 @@ public class SavingsAccountImporter implements Constants {
 			SavingsAccountRow currentRow = excelIterator.next();
 			String name = currentRow.getName();
 			BigDecimal amount = currentRow.getAmount();
+			
+			
 			if(!name.isEmpty()) {
 			if (amount.compareTo(BigDecimal.ZERO) == -1) {
 				amount = amount.negate();
@@ -41,6 +43,8 @@ public class SavingsAccountImporter implements Constants {
 
 			System.out.println(
 					"SavingsAccountImporter.importSavingsAccount()::SAVINGS ACCOUNT PRODUCT ID:=" + inputValue2);
+			
+			
 
 			int product_id_savings;
 			try {
@@ -50,6 +54,10 @@ public class SavingsAccountImporter implements Constants {
 				// In case of parse excepton assigning default product id
 				product_id_savings = DEFAULT_SAVINGS_PRODUCT_ID;
 			}
+			
+			int acc_id_check = getSavingsAccountId(clientId, product_id_savings);
+			if(acc_id_check==0) {
+		
 			short status_enum = 300;
 			short sub_status_enum = 0;
 			short account_type_enum = 1;
@@ -90,6 +98,8 @@ public class SavingsAccountImporter implements Constants {
 					transaction_date, amount, balance_end_date_derived, balance_number_of_days_derived,
 					running_balance_derived, cumulative_balance_derived_new, created_date, APPUSER_ID, is_manual);
 			DBUtils.getInstance().commitTransaction();
+			}
+			System.out.println("Skipping divident account Created for product id ==  "+product_id_savings);
 
 		}
 		}
@@ -178,16 +188,19 @@ public class SavingsAccountImporter implements Constants {
 				+ "'" + productId + "'";
 		ResultSet result = DBUtils.getInstance().executeQueryStatement(sql);
 		System.out.println("SavingsAccountImporter.getSavingsAccountId()::Get Savings account Id Query=:" + sql);
+		try {
 		if (result.next()) {
 			savings_account_id = result.getInt(1);
-		} else {
-			System.out.println("SavingsAccountImporter.getSavingsAccountId()::No Savings Account id for the Client ID");
-			throw new SQLException(
-					"Savings Transaction insertion has failed, no Savings Account id got generated for Client ID"
-							+ clientId);
-		}
-		System.out.println("Fetched Loan ID:" + savings_account_id);
+		} 
+	} catch (Exception e) {
+		System.out.println("No Savings Account id for the Client ID"+e);
+}
+
+		System.out.println("Fetched Savings ID:" + savings_account_id);
 		return savings_account_id;
 	}
 
+
+	
+	
 }

@@ -25,6 +25,7 @@ import org.ideoholic.datamigrator.excelservice.LoanTransactionImporter;
 import org.ideoholic.datamigrator.excelservice.MemberDataImporter;
 import org.ideoholic.datamigrator.excelservice.SavingsAccountImporter;
 import org.ideoholic.datamigrator.excelservice.SavingsDataImporter;
+import org.ideoholic.datamigrator.excelservice.ShareAccountImporter;
 import org.ideoholic.datamigrator.utils.DBUtils;
 
 public class UploadServlet extends HttpServlet {
@@ -246,7 +247,11 @@ public class UploadServlet extends HttpServlet {
 			// all selected
 			SavingsAccountImporter ldi = new SavingsAccountImporter(fullFilePath);
 			ldi.importSavingsAccount(inputValue);
-		}
+		} else if ("Share_Account".equals(userSelectedOption)) {
+			// all selected
+			ShareAccountImporter ldi = new ShareAccountImporter(fullFilePath);
+			ldi.importShareData();
+		} 
 	}
 
 	private void writeToFile(File f, InputStream inputStream) throws IOException {

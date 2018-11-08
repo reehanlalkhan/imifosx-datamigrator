@@ -22,6 +22,8 @@ import org.ideoholic.datamigrator.excelservice.SavingsAccountRow;
 import org.ideoholic.datamigrator.excelservice.SavingsAccountRowIterator;
 import org.ideoholic.datamigrator.excelservice.SavingsTransactionRow;
 import org.ideoholic.datamigrator.excelservice.SavingsTransactionRowIterator;
+import org.ideoholic.datamigrator.excelservice.ShareAccountRow;
+import org.ideoholic.datamigrator.excelservice.ShareAccountRowIterator;
 
 public class ExcelReaderUtils {
 	private Workbook workbook;
@@ -120,6 +122,25 @@ public class ExcelReaderUtils {
 		closeWorkbook();
 		return new SavingsAccountRowIterator(savingsList);
 	}
+	
+	public Iterator<ShareAccountRow> getWorkBookIteratorShare(int sheetNum) {
+		List<ShareAccountRow> loanList = new ArrayList<ShareAccountRow>();
+		Sheet sheet = workbook.getSheetAt(sheetNum);
+		Row row;
+
+		for (int i1 = 3; i1 <= sheet.getLastRowNum(); i1++) {
+			row = sheet.getRow(i1);
+			if (row != null) {
+				ShareAccountRow ldr = new ShareAccountRow(row);
+				loanList.add(ldr);
+			} else {
+				System.out.println(i1);
+			}
+		}
+		closeWorkbook();
+		return new ShareAccountRowIterator(loanList);
+	}
+	
 	
 	public void closeWorkbook() {
 		try {
