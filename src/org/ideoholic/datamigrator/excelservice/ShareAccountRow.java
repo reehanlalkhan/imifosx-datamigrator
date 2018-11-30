@@ -11,9 +11,9 @@ public class ShareAccountRow{
 	private String dName;
 	
 	public ShareAccountRow(Row row) {
-		setDName(getCellValue(row, 3));
-		setNoOfShares(getCellValueNoOfShares(row, 7));
-		setAmountPerShare(getCellValueAmountPerShare(row, 6));
+		setDName(getCellValue(row, 6));
+		setNoOfShares(getCellValueNoOfShares(row, 15));
+		//setAmountPerShare(getCellValueAmountPerShare(row, 6));
 	}
 	
 	private String getCellValue(Row row, int columnNum) {

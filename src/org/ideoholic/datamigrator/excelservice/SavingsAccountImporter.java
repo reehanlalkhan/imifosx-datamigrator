@@ -2,6 +2,7 @@ package org.ideoholic.datamigrator.excelservice;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -23,15 +24,41 @@ public class SavingsAccountImporter implements Constants {
 
 	public void importSavingsAccount(String inputValue2) throws ParseException, ClassNotFoundException, SQLException {
 		// This line will set account number start string to 0 if no number is passed
-
+/*
 		Iterator<SavingsAccountRow> excelIterator = excelReader.getWorkBookIteratorSavingsAccount(0);
-		while (excelIterator.hasNext()) {
-			SavingsAccountRow currentRow = excelIterator.next();
-			String name = currentRow.getName();
-			BigDecimal amount = currentRow.getAmount();
+		while (excelIterator.hasNext()) {*/
+	      int countofclients = getCountOfAllClientId();
+	      // sql : select id from m_client where status_enum = 300
+	      // while rs.next
+	      // clientId = rs.getBigDecimal(1);
+	      // rest of the logic
+	      // while loop ends here
+	      int i=1;
+	     	String sql = "select id from m_client where status_enum = 300";
+			ResultSet rs = DBUtils.getInstance().executeQueryStatement(sql);
+	      
+			while (rs.next()){
+				i++;
+		  BigDecimal clientId = rs.getBigDecimal(1);
+/*	      System.out.println("COUNT OF CLIENTS--=="+countofclients);
+	      for (int i=0; i<=countofclients;i++){
+	    	  
+			BigDecimal id_all=BigDecimal.ZERO;
+			try {
+				id_all = getAllClientId().add(new BigDecimal(i));
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				continue;
+			}
+			*/
 			
-			
-			if(!name.isEmpty()) {
+		/*	SavingsAccountRow currentRow = excelIterator.next();
+			String name = currentRow.getName();*/
+			BigDecimal amount = BigDecimal.ZERO;
+
+/*			if(!name.isEmpty()) {
 			if (amount.compareTo(BigDecimal.ZERO) == -1) {
 				amount = amount.negate();
 			}
@@ -39,8 +66,8 @@ public class SavingsAccountImporter implements Constants {
 			if (!MemberNameUtil.checkMemberName(name)) {
 				continue;
 			}
-			BigDecimal clientId = getClientId(name);
-
+			BigDecimal clientId = getClientId(name);*/
+			//BigDecimal clientId = id_all;
 			System.out.println(
 					"SavingsAccountImporter.importSavingsAccount()::SAVINGS ACCOUNT PRODUCT ID:=" + inputValue2);
 			
@@ -68,14 +95,14 @@ public class SavingsAccountImporter implements Constants {
 
 			short interest_posting_period_enum = 4;
 			short interest_calculation_days_in_year_type_enum = 365;
-			String submittedon_date = DateUtils.getCurrentDateAsSqlDateString();
-			String approvedon_date = DateUtils.getCurrentDateAsSqlDateString();
-			String activatedon_date = DateUtils.getCurrentDateAsSqlDateString();
+			String submittedon_date = "2018-11-01";
+			String approvedon_date = "2018-11-01";
+			String activatedon_date = "2018-11-01";
 			double nm = 0;
 			int version = 1;
 			int y = getCurrentMaxSavingsAccountId(0) + 1;
 			String accountNumber = String.format("%09d", y);
-
+		
 			// String account_no = String.format("%09d", y);
 			short transaction_type_enum = 1;
 			String transaction_date = DateUtils.getCurrentDateAsSqlDateString();
@@ -87,23 +114,35 @@ public class SavingsAccountImporter implements Constants {
 			byte is_manual = 0;
 			BigDecimal account_balance_derived = amount;
 			String nominal_annual_interest_rate = String.format("%.4f", nm);
+			
+			byte withdrawal_fee_for_transfer = 0 ; 
+			int submittedon_userid =1;
+			int approvedon_userid =1;
+			int activatedon_userid =1;
+			BigDecimal min_required_balance = BigDecimal.ZERO;
+			BigDecimal overdraft_limit = BigDecimal.ZERO;
+			String total_overdraft_interest_derived = null;
 			insertSavingsAccount(accountNumber, clientId, product_id_savings, status_enum, sub_status_enum,
-					account_type_enum, deposit_type_enum, submittedon_date, approvedon_date, activatedon_date,
-					CURRENCY_CODE, CURRENCY_DIGITS, nominal_annual_interest_rate, interest_compounding_period_enum,
+					account_type_enum, deposit_type_enum, submittedon_date,submittedon_userid, approvedon_date,approvedon_userid, activatedon_date,
+					activatedon_userid,CURRENCY_CODE, CURRENCY_DIGITS,CURRENCY_MULTIPLESOF, nominal_annual_interest_rate, interest_compounding_period_enum,
 					interest_posting_period_enum, interest_calculation_type_enum,
-					interest_calculation_days_in_year_type_enum, account_balance_derived, version);
-			DBUtils.getInstance().commitTransaction();
-			int savings_account_id = getSavingsAccountId(clientId, product_id_savings);
+					interest_calculation_days_in_year_type_enum,withdrawal_fee_for_transfer,overdraft_limit,total_overdraft_interest_derived,account_balance_derived,min_required_balance, version);
+			
+/*			int savings_account_id = getSavingsAccountId(clientId, product_id_savings);
 			insertSavingAccountTransaction(savings_account_id, OFFICE_ID, transaction_type_enum, IS_REVERSED,
 					transaction_date, amount, balance_end_date_derived, balance_number_of_days_derived,
 					running_balance_derived, cumulative_balance_derived_new, created_date, APPUSER_ID, is_manual);
-			DBUtils.getInstance().commitTransaction();
+			DBUtils.getInstance().commitTransaction();*/
 			}
+	      
 			System.out.println("Skipping divident account Created for product id ==  "+product_id_savings);
-
-		}
-		}
+			//if (i==5)break;
+	      }
+			DBUtils.getInstance().commitTransaction();
 	}
+/*		}
+		}
+	}*/
 
 	public int getCurrentMaxSavingsAccountId(int accountNumber) throws ClassNotFoundException, SQLException {
 		BigDecimal savingsId = null;
@@ -141,27 +180,26 @@ public class SavingsAccountImporter implements Constants {
 		System.out.println("SavingsAccountImporter.getClientId()::Fetched client ID:" + clientId);
 		return clientId;
 	}
-
-	public void insertSavingsAccount(String accountNumber, BigDecimal clientId, int product_id_savings,
-			short status_enum, short sub_status_enum, short account_type_enum, short deposit_type_enum,
-			String submittedon_date, String approvedon_date, String activatedon_date, String currencyCode,
-			short currencyDigits, String nominal_annual_interest_rate, short interest_compounding_period_enum,
-			short interest_posting_period_enum, short interest_calculation_type_enum,
-			short interest_calculation_days_in_year_type_enum, BigDecimal account_balance_derived, int version)
+			public void insertSavingsAccount(String accountNumber, BigDecimal clientId, int product_id_savings,short status_enum, short sub_status_enum, short account_type_enum, short deposit_type_enum,String submittedon_date, int submittedon_userid, String approvedon_date, int approvedon_userid, String activatedon_date, int activatedon_userid, String currencyCode,short currencyDigits, short currencyMultiplesof, String nominal_annual_interest_rate, short interest_compounding_period_enum,short interest_posting_period_enum, short interest_calculation_type_enum,short interest_calculation_days_in_year_type_enum, byte withdrawal_fee_for_transfer,BigDecimal overdraft_limit,String total_overdraft_interest_derived, BigDecimal account_balance_derived, BigDecimal min_required_balance, int version)
 			throws ClassNotFoundException, SQLException {
-		String sql = "INSERT into m_savings_account(account_no,client_id,product_id,status_enum,sub_status_enum,account_type_enum,deposit_type_enum,submittedon_date,approvedon_date,activatedon_date,currency_code,currency_digits,nominal_annual_interest_rate,interest_compounding_period_enum,interest_posting_period_enum,interest_calculation_type_enum,interest_calculation_days_in_year_type_enum,account_balance_derived,version) VALUES('"
+		String sql = "INSERT into m_savings_account(account_no,client_id,product_id,status_enum,sub_status_enum,account_type_enum,"
+				+ "deposit_type_enum,submittedon_date,submittedon_userid,approvedon_date,approvedon_userid,activatedon_date,"
+				+ "activatedon_userid,currency_code,currency_digits,currency_multiplesof,nominal_annual_interest_rate,"
+				+ "interest_compounding_period_enum,interest_posting_period_enum,interest_calculation_type_enum,"
+				+ "interest_calculation_days_in_year_type_enum,withdrawal_fee_for_transfer,overdraft_limit,total_overdraft_interest_derived,account_balance_derived,"
+				+ "min_required_balance,version) VALUES('"
 				+ accountNumber + "','" + clientId + "'," + "'" + product_id_savings + "','" + status_enum + "','"
 				+ sub_status_enum + "','" + account_type_enum + "','" + deposit_type_enum + "','" + submittedon_date
-				+ "','" + approvedon_date + "','" + activatedon_date + "','" + CURRENCY_CODE + "','" + CURRENCY_DIGITS
-				+ "','" + nominal_annual_interest_rate + "','" + interest_compounding_period_enum + "','"
+				+ "','"+submittedon_userid+"','" + approvedon_date + "','"+approvedon_userid+"','" + activatedon_date + "','"+activatedon_userid+"','" + CURRENCY_CODE + "','" + CURRENCY_DIGITS
+				+ "','"+CURRENCY_MULTIPLESOF+"','" + nominal_annual_interest_rate + "','" + interest_compounding_period_enum + "','"
 				+ interest_posting_period_enum + "','" + interest_calculation_type_enum + "','"
-				+ interest_calculation_days_in_year_type_enum + "','" + account_balance_derived + "','" + version
+				+ interest_calculation_days_in_year_type_enum + "','"+withdrawal_fee_for_transfer+"','"+overdraft_limit+"',"+total_overdraft_interest_derived+",'" + account_balance_derived + "','"+min_required_balance+"','" + version
 				+ "')";
 		DBUtils.getInstance().executePreparedStatement(sql);
 		System.out.println("SavingsAccountImporter.insertSavingsAccount()::INSERT QUERY TO SAVINGS ACCOUNT" + sql);
 	}
 
-	private void insertSavingAccountTransaction(int savings_account_id, BigDecimal officeId,
+	/*private void insertSavingAccountTransaction(int savings_account_id, BigDecimal officeId,
 			short transaction_type_enum, byte isReversed, String transaction_date, BigDecimal amount,
 			String balance_end_date_derived, int balance_number_of_days_derived, BigDecimal running_balance_derived,
 			BigDecimal cumulative_balance_derived_new, String created_date, BigDecimal appuserId, byte is_manual)
@@ -180,7 +218,7 @@ public class SavingsAccountImporter implements Constants {
 						+ sql);
 		DBUtils.getInstance().executePreparedStatement(sql);
 
-	}
+	}*/
 
 	public int getSavingsAccountId(BigDecimal clientId, int productId) throws ClassNotFoundException, SQLException {
 		int savings_account_id = 0;
@@ -200,7 +238,33 @@ public class SavingsAccountImporter implements Constants {
 		return savings_account_id;
 	}
 
+	public BigDecimal getAllClientId() throws ClassNotFoundException, SQLException {
+		BigDecimal clientId = null;
+		String sql = "select id from m_client where status_enum = 300";
+		ResultSet result = DBUtils.getInstance().executeQueryStatement(sql);
+		if (result.next()) {
+			clientId = result.getBigDecimal(1);
+		} else {
+			System.out.println("SavingsAccountImporter.getClientId()::No id for the display name");
+			throw new SQLException(
+					"Client insertion has failed, no client ID got generated for Display Name:");
+		}
+		System.out.println("SavingsAccountImporter.getClientId()::Fetched client ID:" + clientId);
+		return clientId;
+	}
 
+	public int getCountOfAllClientId() throws ClassNotFoundException, SQLException {
+		int countClientId = 0;
+		String sql = "select COUNT(id) from m_client";
+		ResultSet result = DBUtils.getInstance().executeQueryStatement(sql);
+		if (result.next()) {
+			countClientId = result.getInt(1);
+		} else {
+			System.out.println("SavingsAccountImporter.getClientId()::No id for the Client");
+		}
+		System.out.println("SavingsAccountImporter.getClientId()::Fetched no of clients:" + countClientId);
+		return countClientId;
+	}
 	
 	
 }
