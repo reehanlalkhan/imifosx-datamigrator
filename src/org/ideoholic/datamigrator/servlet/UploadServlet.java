@@ -20,6 +20,9 @@ import org.apache.tomcat.util.http.fileupload.FileItem;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
+import org.ideoholic.datamigrator.excelservice.JournalEntryForLoan;
+import org.ideoholic.datamigrator.excelservice.JournalEntryForShare;
+import org.ideoholic.datamigrator.excelservice.JournalEntryImporter;
 import org.ideoholic.datamigrator.excelservice.LoanDataImporter;
 import org.ideoholic.datamigrator.excelservice.LoanTransactionImporter;
 import org.ideoholic.datamigrator.excelservice.MemberDataImporter;
@@ -174,7 +177,32 @@ public class UploadServlet extends HttpServlet {
 							
 						System.out.println("INPUT DATE "+inputDate);
 					}
+					else if ("tt4".equalsIgnoreCase(fi.getFieldName()))
+					{
+						
+						
+						inputValue=fi.getString();
+						
+						System.out.println("INPUT ID "+inputValue);
+					}
+					else if ("tt5".equalsIgnoreCase(fi.getFieldName()))
+					{
+						
+						
+						inputValue=fi.getString();
+						
+						System.out.println("INPUT ID "+inputValue);
+					}
+					else if ("tt6".equalsIgnoreCase(fi.getFieldName()))
+					{
+						
+							
+						inputValue=fi.getString();
+							
+						System.out.println("INPUT ID "+inputValue);
+					}
 					System.out.println("ALL USER INPUTED OPTIONS = : "+userSelectedOption);
+					
 				}
 			}
 			runServiceBasedOnUserSelection(userSelectedOption,fullFilePath,inputValue,inputDate);
@@ -251,6 +279,21 @@ public class UploadServlet extends HttpServlet {
 			// all selected
 			ShareAccountImporter ldi = new ShareAccountImporter(fullFilePath);
 			ldi.importShareData();
+		} 
+		else if ("Journal_Entry_Savings".equals(userSelectedOption)) {
+			// all selected
+			JournalEntryImporter ldi = new JournalEntryImporter(fullFilePath);
+			ldi.importJournalEntry(inputValue);
+		} 
+		else if ("Journal_Entry_Loan".equals(userSelectedOption)) {
+			// all selected
+			JournalEntryForLoan ldi = new JournalEntryForLoan(fullFilePath);
+			ldi.importJournalEntryForLoan(inputValue);
+		} 
+		 else if ("Journal_Entry_Share".equals(userSelectedOption)) {
+			// all selected
+			 JournalEntryForShare ldi = new JournalEntryForShare(fullFilePath);
+			ldi.importJournalEntryForShare(inputValue);
 		} 
 	}
 

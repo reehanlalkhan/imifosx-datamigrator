@@ -42,4 +42,6 @@ public interface Constants {
 	int DOCUMENT_TYPE_ID = 23;
 	int STATUS = 200;
 	int ACTIVE = 200;
+	
+	int GL_JOURNAL_ACCOUNT_ID = 163;
 }

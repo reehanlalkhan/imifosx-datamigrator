@@ -34,6 +34,12 @@ public class UploadDisplayServlet extends HttpServlet {
 		out.println( "<input type = \"text\" name = \"tt2\" id =\"104\" > <br>");
 		out.println( "<input type = \"radio\" name = \"f1\" id =\"16\" value=\"Share_Account\"> Share Account<br>");
 		out.println( "<input type = \"text\" placeholder ='YYYY-MM-DD' name = \"tt3\" id =\"105\" > <br>");
+		out.println( "<input type = \"radio\" name = \"f1\" id =\"17\" value=\"Journal_Entry_Savings\"> Journal Entry Savings<br>");
+		out.println( "<input type = \"text\"  name = \"tt4\" id =\"106\" > <br>");
+		out.println( "<input type = \"radio\" name = \"f1\" id =\"18\" value=\"Journal_Entry_Loan\"> Journal Entry Loan<br>");
+		out.println( "<input type = \"text\"  name = \"tt5\" id =\"107\" > <br>");
+		out.println( "<input type = \"radio\" name = \"f1\" id =\"19\" value=\"Journal_Entry_Share\"> Journal Entry Share<br>");
+		out.println( "<input type = \"text\"  name = \"tt6\" id =\"108\" > <br>");
 		out.println("     <input type = 'file' name = 'file' size = '50' />");
 		out.println("     <br />");
 		out.println("     <input type = 'submit' value = 'Upload File' />");
